@@ -1,0 +1,25 @@
+1) What are specs of the board you are using (ex. Speed, RAM, Flash)?
+  Flash
+
+2) What does GPIO stand for?
+  General Purpose I/O
+
+3) Is the provided delay function accurate? Why or why not?
+  Not accurate. Using for loop to delay depends on how fast our machine is.
+
+4) What are the Port and Pin Numbers of the two Green LEDs?
+  Pin 15 and Pin 11
+  Port R44 and R43
+
+5) What are the public attributes of the GPIO_InitTypeDef Struct?
+
+GPIO_Pin
+GPIO_Mode
+GPIO_OType
+GPIO_Speed
+GPIO_PuPd
+
+Were there any difficulties? If not, what did you learn? [5 points]
+
+So difficult to understand how all program works since privious C program never has endless while loop.
+And it takes much time to understand struct GPIO_InitTypeDef
