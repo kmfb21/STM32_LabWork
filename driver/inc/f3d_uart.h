@@ -1,14 +1,14 @@
 /* f3d_uart.h --- 
  * 
  * Filename: f3d_uart.h
- * Description: 
+ * Description: Head files of drivers of TX and RX 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang (bofang) Omar White (omawhite)
  * Created: Thu Sep 26 07:05:43 2013
- * Last-Updated: 
- *           By: 
+ * Last-Updated: Thu Feb 11 23:10:14 2016
+ *           By: Bo Fang (bofang)
  *     Update #: 0
- * Keywords: 
+ * Keywords: Add comment of head
  * Compatibility: 
  * 
  */

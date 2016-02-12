@@ -1,0 +1,20 @@
+Questions [3 points each]
+How many connections are required to communicate over UART?
+3 connections
+
+What is the purpose of "alternate functions" for GPIO pins?
+alternate functions would refer to other functions
+
+Define "baud rate" in your own words.
+It is the rate that microcontroller's data of communication
+
+Why do we need newlib_stubs? Specifically, is there a reason that printf won't work on the board without it?
+because this library does not depend on an operating system
+
+Give an example of a situation in which the Salae Logic Analyzer is the best debugging method and include a screen shot of the Logic application.
+When we need to compare serveral communications.
+
+What did you learn, any difficulties you had [5]:
+
+We learned the struction of UART in detail. The only difficulty we met is when running Word Count, we forget the program needs ESC to show word count, we both thought that we must have some bug in our code.O
+

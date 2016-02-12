@@ -1,14 +1,15 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
+ * Description: word count
+ * Author: Bo Fang (bofang)
+ *         Omar White (omawhite)
+ * Maintainer: Omar White (omawhite)
  * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
+ * Last-Updated: Thu Feb 11 23:21:20 2016
+ *           By: Bo Fang (bofang)
  *     Update #: 0
- * Keywords: 
+ * Keywords: Word Count
  * Compatibility: 
  * 
  */
@@ -45,9 +46,26 @@ int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
   
+  //wordcount
+  int lines = 0;//set initial count variables
+  int words = 0;
+  int characters = 0;
+
+  int c; /* current character */
   while (1){
-    putstring("hello"); 
- }
+    while ((c = getchar()) != 0x1b) {//if we have not read to end yet
+        characters++;//one more character
+        if (c=='\n') {
+            lines++;//if there is a new line \n, word+1 and line+1
+            words++;
+        }
+        if (c==' ' || c=='\t' || c=='\r' || c=='\f' || c=='\v') {
+            words++;//if anything else to stop a word, word+1
+        }
+    }
+    printf("%d  %d %d\n", lines, words, characters);//output
+  }
+  return 0;
 }
 
 #ifdef USE_FULL_ASSERT
