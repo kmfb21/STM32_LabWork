@@ -1,0 +1,27 @@
+Questions [3 points each]
+What does the CS pin do (the CS pin is called SS in the lab manual)?
+CS(SS) is "slave select"
+All communication is controlled by the master,
+which selects the slave it wishes to communicate with by lowering the appropriate SS line.
+
+Why do you set the CS high at the end of the pin initializations?
+What other functions in f3d_gyro.c change CS from low to high or high to low?
+Because when CS is low we read or write data, which is set in our functions, from low to high
+otherwise, we need it high. so after initializing, we immediately set it high
+
+How do you hook up multiple peripherals on one SPI bus?
+We connect PA5 and SCK, PA6 and MISO, PA7 MOSI
+
+The STM has an Operating Frequency of 72 MHz. When initializing SPI1, what do you set the baud rate prescaler to?
+What is the resulting SPI clock frequency?
+a prescaler of 8 results in a 3MHz SPI clock (24/8).
+We use prescaler of 64, 8, and 2 for slow, medium, and fast speeds, respectively.
+
+Does a peripheral (slave) need to be configured with the transmission speed before it can communicate with the microcontroler (master)?
+Why would you want to be able to do on-the-fly changes in transmission speed?
+Yes
+Because it is needed in our program every time.
+
+Describe what you learned and any difficulties you had [5]:
+We have some settings wrong in our initial function, it caused our output always 0.000
+But we thought the bug was in our gyro_write function, so it wastes a lot of time for us to debuging a correct place for many times.
