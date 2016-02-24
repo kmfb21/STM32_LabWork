@@ -1,22 +1,51 @@
+/**********************************************************
+ * f3d_gyro.c
+ *
+ * Author: Bo Fang (bofang)
+ *         Carson Reid Schwalm (cschwalm)
+ * Date Created: 02/21/2016
+ * Last Modified by: Bo Fang (bofang)
+ * Date Last Modified: 02/21/2016
+ * Assignment: Lab6
+ * Part of: CS-Spring-2016
+ */
 #include <f3d_gyro.h>
 #include <stm32f30x.h>
 void f3d_gyro_interface_init() {
   /**********************************************************************/
   /************** CODE HERE *********************************************/
   //You must configure and initialize the following 4 pins
-
+  GPIO_InitTypeDef GPIO_InitStructure;
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOE, ENABLE);
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
   //SCK PA5 
-  
   //MOSI PA6 
-  
   //MISO PA7
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA,&GPIO_InitStructure);
+
+  GPIO_PinAFConfig(GPIOA,5,GPIO_AF_5);
+  GPIO_PinAFConfig(GPIOA,6,GPIO_AF_5);
+  GPIO_PinAFConfig(GPIOA,7,GPIO_AF_5);
 
   //CS PE3
-
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOE,&GPIO_InitStructure);
 
   
   //set the CS high
-  
+  GPIO_SetBits(GPIOE, GPIO_Pin_3);
+
   /**********************************************************************/
    
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
@@ -64,6 +93,8 @@ void f3d_gyro_init(void) {
   f3d_gyro_write(&ctrl1, 0x20, 1);
   f3d_gyro_write(&ctrl4, 0x23, 1);
 
+
+  GPIO_SetBits(GPIOE, GPIO_Pin_3);
 }
 //to read from it
 void f3d_gyro_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
@@ -96,13 +127,22 @@ void f3d_gyro_write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite
   /************** CODE HERE *********************************************/
 
   //CHECK TO SEE HOW MANY BYTES AND HANDLE THAT CORRECTLY
-
+  if (NumByteToWrite > 1) {
+    WriteAddr |= (uint8_t)(0x40); // sets to multibyte mode
+  }
   //SET THE CS
-
+  GYRO_CS_LOW();
   //SEND THE FIRST BYTE
-
+  
+  f3d_gyro_sendbyte(WriteAddr); 
   //IF MULTIPLE, SEND THE ADDITIONAL
-
+  while(NumByteToWrite > 0x00) {
+    f3d_gyro_sendbyte((uint8_t)(*pBuffer));
+    //*pBuffer = f3d_gyro_sendbyte(((uint8_t)0x00));
+    NumByteToWrite--;
+    pBuffer++;
+  }
+  GYRO_CS_HIGH();
   /***************************************************************************/
 }
 
@@ -110,9 +150,11 @@ void f3d_gyro_write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite
 static uint8_t f3d_gyro_sendbyte(uint8_t byte) {
   /*********************************************************/
   /***********************CODE HERE ************************/
+  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET); 
+  SPI_SendData8(SPI1, byte);
 
-
-
+  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+  return (uint8_t)SPI_ReceiveData8(SPI1);
   /********************** CODE HERE ************************/
   /*********************************************************/
 }
