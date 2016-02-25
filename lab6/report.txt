@@ -3,14 +3,20 @@ What does the CS pin do (the CS pin is called SS in the lab manual)?
 CS(SS) is "slave select"
 All communication is controlled by the master,
 which selects the slave it wishes to communicate with by lowering the appropriate SS line.
+used to enable correct device
 
 Why do you set the CS high at the end of the pin initializations?
 What other functions in f3d_gyro.c change CS from low to high or high to low?
+
 Because when CS is low we read or write data, which is set in our functions, from low to high
-otherwise, we need it high. so after initializing, we immediately set it high
+otherwise, we need it high. so after initializing, we immediately set it high,
+Because it is easy to communicate with the low ones.
+in gyro_read and gyro_write also set it.
 
 How do you hook up multiple peripherals on one SPI bus?
-We connect PA5 and SCK, PA6 and MISO, PA7 MOSI
+To talk to a particular slave, you'll make that slace's SS line low and keep the rest of them high
+Lots of slaves will require lots of SS lines
+For MISO, connect to the MOSI of the next. In this case, a single SS line goes to all the slaves.
 
 The STM has an Operating Frequency of 72 MHz. When initializing SPI1, what do you set the baud rate prescaler to?
 What is the resulting SPI clock frequency?
