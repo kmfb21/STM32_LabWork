@@ -1,10 +1,14 @@
-/* main.c --- 
- * 
- * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
+/**********************************************************
+ * main.c for lab7
+ *
+ * Author: Bo Fang (bofang)
+ *         Bradley Vine (bradvine)
+ * Date Created: 03/03/2016
+ * Last Modified by: Bo Fang (bofang)
+ * Date Last Modified: 03/03/2016
+ * Assignment: Lab7
+ * Part of: CS-Spring-2016
+ */
 /* Code: */
 
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
@@ -32,7 +36,7 @@ int main(void) {
   char writeData[10];
 
   while(1) {
-      //delay(10);
+      delay(10);
       f3d_gyro_getdata(gData);
       snprintf(writeData, 10, "%f", gData[0]);
       f3d_lcd_drawString(1, 1, "x = ", BLACK, WHITE);
