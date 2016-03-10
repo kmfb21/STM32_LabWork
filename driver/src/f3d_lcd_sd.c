@@ -3,10 +3,10 @@
  * Filename: f3d_lcd_sd.c
  * Description: 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Thu Oct 24 05:18:36 2013
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 03/10/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
@@ -256,6 +256,18 @@ void f3d_lcd_pushColor(uint16_t *color,int cnt) {
 
 static void f3d_lcd_writeCmd(uint8_t c) {
   LcdWrite(LCD_C,&c,1);
+}
+
+void f3d_lcd_drawRectangle(uint16_t color, uint8_t x1, uint8_t y1, uint8_t x2,  uint8_t y2){
+  uint8_t width = x2-x1;
+  uint8_t height = y2-y1;
+  uint8_t y;
+  uint16_t x[width];
+  for (y = 0; y < width; y++) x[y] = color;
+  f3d_lcd_setAddrWindow (x1, y1, x2, y2, MADCTLGRAPHICS);
+  for (y = 0;y < height; y++) {
+    f3d_lcd_pushColor(x, width);
+  }
 }
 /*
 void f3d_lcd_fillScreen(uint16_t color) {
