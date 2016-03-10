@@ -1,0 +1,17 @@
+Q1)
+It has two pins: SDA and SCL
+volts are from 2.16V to 3.6V
+The accelerometer/magnetometer is between user_input and reset button
+
+Q2)
+after we send data to them, i2c can know which one is accelerometer and which one is magnetometer, so that it can control them.
+
+Q3)
+the loop is reading x,y,z axis by shifting buffer and save it to accel_data[i]
+
+Difficulties:
+
+it was difficult to understand how to translate acceleration to pitch and roll
+but much easier at compass part.
+
+I learned how to use pitch and roll drawing a ball scrolling on the screen.

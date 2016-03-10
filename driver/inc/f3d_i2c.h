@@ -3,11 +3,11 @@
  * Filename: f3d_i2c.h
  * Description: 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang) 
  * Created: Thu Oct 31 09:11:48 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
+ * Last-Updated: 03/03/2016
+ *           By: Bo Fang(bofang)
+ *     Update #: 
  * Keywords: 
  * Compatibility: 
  * 
