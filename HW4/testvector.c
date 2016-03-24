@@ -1,12 +1,12 @@
-/* testvector.c --- 
+/* main.c --- 
  * 
- * Filename: testvector.c
- * Description: 
+ * Filename: main.c
+ * Description: HW4
  * Author: Bryce Himebaugh
- * Maintainer: 
- * Created: Thu Oct  8 12:39:28 2015
- * Last-Updated: 
- *           By: 
+ * Maintainer: Bo Fang(bofang)
+ * Created: Wed Oct  7 14:14:25 2015
+ * Last-Updated: 03/23/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 

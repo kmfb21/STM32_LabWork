@@ -1,26 +1,15 @@
 /* machine.h --- 
  * 
  * Filename: machine.h
- * Description: 
+ * Description: HW4 head file
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Thu Oct  8 12:40:51 2015
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 03/23/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
  * 
  */
 

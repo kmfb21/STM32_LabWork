@@ -1,26 +1,12 @@
 /* flags.h --- 
  * 
  * Filename: flags.h
- * Description: 
+ * Description: HW4 head file
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Fri Oct  9 13:40:16 2015
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
+ * Last-Updated: 03/23/2016
+ *           By: Bo Fang(bofang)
  * 
  */
 
