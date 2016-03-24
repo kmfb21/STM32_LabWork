@@ -59,7 +59,7 @@ void encryptStr(char* phrase, char* key, char* ncrypt) {
   int keylen = strlen(key);
   int phraseLen = strlen(phrase);
   int i;
-  for (i = 0; i < 1000; i++) { //for loop should be (i = 0; i < phrase; i++)
+  for (i = 0; i < phraseLen; i++) { //for loop should be (i = 0; i < phrase; i++)
     ncrypt[i] = *key ^ *phrase;
     key++;
     phrase++;
