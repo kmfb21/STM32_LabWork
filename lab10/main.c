@@ -43,6 +43,7 @@ struct bmpfile_magic magic;
 struct bmpfile_header header; 
 BITMAPINFOHEADER info;
 struct bmppixel pix;
+void drawpic(char* pic);
 
 void die (FRESULT rc) {
   printf("Failed with rc=%u.\n", rc);
@@ -76,47 +77,7 @@ int main(void) {
   f_mount(0, &Fatfs);		/* Register volume work area (never fails) */
 
 
-  //***************************
-  //lab work here
-  f3d_lcd_fillScreen(WHITE);
-  printf("\nOpen an BMP file.\n");
-  rc = f_open(&Fil, "logo.bmp", FA_READ);
-  if (rc) die(rc);
-  printf("\nReading the picture.\n");
-
-  rc = f_read(&Fil, &magic, sizeof(magic), &br);
-  printf("Magic %c%c\n", magic.magic[0], magic.magic[1]); 
-  rc = f_read(&Fil, &header, sizeof(header), &br);
-  printf("file size %d offset %d\n", header.filesz, header.bmp_offset);
-  rc = f_read(&Fil, &info, sizeof(info), &br);
-  printf("Width %d Height %d, bitspp %d\n", info.width, info.height, info.bitspp);
- 
-  uint16_t color;
-  uint8_t x = 0, y = 0;
-  uint16_t colors[ST7735_width];
-  //while(!rc) {
-  while(y < info.height) {
-    rc = f_read(&Fil, &pix, sizeof(pix), &br);
-    //printf("%d %d %d\n", pix.b, pix.g, pix.r);
-    color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
-    //printf("%x\n",color);
-    //f3d_lcd_drawPixel(x, y, color);
-    colors[x] = color;
-    if(x == info.width) {
-      x=0;
-      f3d_lcd_pushColor(colors,info.width);
-      y++;
-    }
-    x++;
-  }
-
-  if (rc) die(rc);
-  printf("\nClose the file.\n");
-  rc = f_close(&Fil);
-  if (rc) die(rc);
-
-  //***************************
-
+drawpic("out.bmp");
 
   printf("\nOpen an existing file (message.txt).\n");
   rc = f_open(&Fil, "MESSAGE.TXT", FA_READ);
@@ -170,6 +131,63 @@ int main(void) {
 
   while (1);
 }
+void drawpic(char* pic) {
+  FRESULT rc;
+  UINT br;
+  //***************************
+  //lab work here
+  f3d_lcd_fillScreen(WHITE);
+  printf("\nOpen an BMP file.\n");
+  rc = f_open(&Fil, pic, FA_READ);
+  if (rc) die(rc);
+  printf("\nReading the picture.\n");
+  rc = f_read(&Fil, &magic, sizeof(magic), &br);
+  printf("Magic %c%c\n", magic.magic[0], magic.magic[1]); 
+  rc = f_read(&Fil, &header, sizeof(header), &br);
+  printf("file size %d offset %d\n", header.filesz, header.bmp_offset);
+  rc = f_read(&Fil, &info, sizeof(info), &br);
+  printf("Width %d Height %d, bitspp %d\n", info.width, info.height, info.bitspp);
+ 
+  //uint16_t color;
+  uint8_t x = 0, y = 0;
+  //uint16_t* matrix[info.height];
+  uint16_t* matrix = (uint16_t*)malloc(sizeof(uint16_t) * info.height * info.width);
+  int count = 0;
+  //uint16_t** matrix = (uint16_t **)malloc(sizeof(*matrix) * info.height);
+  for(y=0;y<info.height;y++) {
+    //matrix[y] = (uint16_t *)malloc(sizeof(**matrix) * info.width);
+    for(x=0;x<info.width;x++) {
+      //printf("x: %d y: %d\n",x,y);
+      rc = f_read(&Fil, &pix, sizeof(pix), &br);
+      matrix[count++] = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+    }
+    //matrix[y][x] = '\0';
+  }
+  printf("read Done\n");
+  //uint16_t colors[ST7735_width];
+ 
+  int i,j;
+  count = 0;
+  for(j=0;j<info.height;j++) {
+    //for(i=0;i<info.width;j++) {
+    //  colors[i] = matrix[j];
+    //}
+    printf("j: %d\n",j);
+    //f3d_lcd_pushColor(matrix[j],info.width);
+    for(i=0;i<info.width;i++) f3d_lcd_drawPixel(i,j,matrix[count++]);
+    //free(matrix[j]);
+  }
+  free(matrix);
+  
+
+  if (rc) die(rc);
+  printf("\nClose the file.\n");
+  rc = f_close(&Fil);
+  if (rc) die(rc);
+
+  //***************************
+}
+
 
 #ifdef USE_FULL_ASSERT
 void assert_failed(uint8_t* file, uint32_t line) {
