@@ -1,7 +1,7 @@
 Bo Fang
 
 Q1) In previous labs, adding a peripheral has required pin initializations. Why were able to add the nunchuk without initializing anything?
-Because pb6 and pb7 have already been initialized in the last lab.
+Because pb6 and pb7 are initialized in other files which are done in last labs
 
 Q2) What are the major differences between these two functions and what does that imply about communicating with the nunchuk?
 

@@ -32,6 +32,6 @@ OBJS=  $(STARTUP) 	main.o \
 			newlib_stubs.o
 # include common make file
 
-include $(TEMPLATEROOT)/Makefile.common
+include $(TEMPLATEROOT)/c335.mk
 
 

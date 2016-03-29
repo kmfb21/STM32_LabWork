@@ -38,6 +38,11 @@
 #include <ff.h>
 #include <diskio.h>
 #include <stdio.h>
+#include "bmp.h"
+struct bmpfile_magic magic; 
+struct bmpfile_header header; 
+BITMAPINFOHEADER info;
+struct bmppixel pix;
 
 void die (FRESULT rc) {
   printf("Failed with rc=%u.\n", rc);
@@ -70,8 +75,51 @@ int main(void) {
 
   f_mount(0, &Fatfs);		/* Register volume work area (never fails) */
 
+
+  //***************************
+  //lab work here
+  f3d_lcd_fillScreen(WHITE);
+  printf("\nOpen an BMP file.\n");
+  rc = f_open(&Fil, "logo.bmp", FA_READ);
+  if (rc) die(rc);
+  printf("\nReading the picture.\n");
+
+  rc = f_read(&Fil, &magic, sizeof(magic), &br);
+  printf("Magic %c%c\n", magic.magic[0], magic.magic[1]); 
+  rc = f_read(&Fil, &header, sizeof(header), &br);
+  printf("file size %d offset %d\n", header.filesz, header.bmp_offset);
+  rc = f_read(&Fil, &info, sizeof(info), &br);
+  printf("Width %d Height %d, bitspp %d\n", info.width, info.height, info.bitspp);
+ 
+  uint16_t color;
+  uint8_t x = 0, y = 0;
+  uint16_t colors[ST7735_width];
+  //while(!rc) {
+  while(y < info.height) {
+    rc = f_read(&Fil, &pix, sizeof(pix), &br);
+    //printf("%d %d %d\n", pix.b, pix.g, pix.r);
+    color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+    //printf("%x\n",color);
+    //f3d_lcd_drawPixel(x, y, color);
+    colors[x] = color;
+    if(x == info.width) {
+      x=0;
+      f3d_lcd_pushColor(colors,info.width);
+      y++;
+    }
+    x++;
+  }
+
+  if (rc) die(rc);
+  printf("\nClose the file.\n");
+  rc = f_close(&Fil);
+  if (rc) die(rc);
+
+  //***************************
+
+
   printf("\nOpen an existing file (message.txt).\n");
-    rc = f_open(&Fil, "MESSAGE.TXT", FA_READ);
+  rc = f_open(&Fil, "MESSAGE.TXT", FA_READ);
   if (rc) die(rc);
  
   printf("\nType the file content.\n");
