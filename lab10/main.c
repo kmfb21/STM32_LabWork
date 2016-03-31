@@ -1,8 +1,8 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
- * Author: 
+ * Description: This is the main file for the SD card reader.  We print the image to the STM LCD then using the accelerometer, rotate the image so it is upright.  We use the nunchuck joystick and buttons to revolve through 3 different images
+ * Author: Bo Fang and Carson Schwalm
  * Maintainer: 
  * Created: Thu Jan 10 11:23:43 2013
  * Last-Updated: 
@@ -38,11 +38,13 @@
 #include <ff.h>
 #include <diskio.h>
 #include <stdio.h>
+#include <math.h>
 #include "bmp.h"
 struct bmpfile_magic magic; 
 struct bmpfile_header header; 
 BITMAPINFOHEADER info;
 struct bmppixel pix;
+
 void drawpic(char* pic);
 
 void die (FRESULT rc) {
@@ -50,34 +52,55 @@ void die (FRESULT rc) {
   while (1);
 }
 
-FATFS Fatfs;		/* File system object */
-FIL Fil;		/* File object */
-BYTE Buff[128];		/* File read buffer */
+FATFS Fatfs;                /* File system object */
+FIL Fil;                /* File object */
+BYTE Buff[128];                /* File read buffer */
 
-int main(void) { 
+int main(void) {
   char footer[20];
   int count=0;
   int i;
 
-  FRESULT rc;			/* Result code */
-  DIR dir;			/* Directory object */
-  FILINFO fno;			/* File information object */
+  FRESULT rc;                        /* Result code */
+  DIR dir;                        /* Directory object */
+  FILINFO fno;                        /* File information object */
   UINT bw, br;
   unsigned int retval;
+  
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+
+
   f3d_uart_init();
+  f3d_gyro_init();
   f3d_lcd_init();
-  f3d_delay_init();
+  f3d_lcd_fillScreen(WHITE); //set background  
+  f3d_led_init();
+  f3d_i2c1_init();
+  delay(10);
+  f3d_accel_init();
+  delay(10);
+  //  f3d_uart_init();
+  //f3d_lcd_init();
+  //f3d_delay_init();
+  delay(10);
   f3d_rtc_init();
+  delay(10);
+  //f3d_accel_init();
+printf("reach here");
+//delay(10);
+//  f3d_nunchuk_init();
 
-  f_mount(0, &Fatfs);		/* Register volume work area (never fails) */
 
 
-drawpic("out.bmp");
+
+  f_mount(0, &Fatfs);                /* Register volume work area (never fails) */
+
+  drawpic("1.bmp");
+
 
   printf("\nOpen an existing file (message.txt).\n");
   rc = f_open(&Fil, "MESSAGE.TXT", FA_READ);
@@ -85,9 +108,9 @@ drawpic("out.bmp");
  
   printf("\nType the file content.\n");
   for (;;) {
-    rc = f_read(&Fil, Buff, sizeof Buff, &br);	/* Read a chunk of file */
-    if (rc || !br) break;			/* Error or end of file */
-    for (i = 0; i < br; i++)		        /* Type the data */
+    rc = f_read(&Fil, Buff, sizeof Buff, &br);        /* Read a chunk of file */
+    if (rc || !br) break;                        /* Error or end of file */
+    for (i = 0; i < br; i++)                        /* Type the data */
       putchar(Buff[i]);
   }
   if (rc) die(rc);
@@ -115,8 +138,8 @@ drawpic("out.bmp");
   
   printf("\nDirectory listing...\n");
   for (;;) {
-    rc = f_readdir(&dir, &fno);		/* Read a directory item */
-    if (rc || !fno.fname[0]) break;	/* Error or end of dir */
+    rc = f_readdir(&dir, &fno);                /* Read a directory item */
+    if (rc || !fno.fname[0]) break;        /* Error or end of dir */
     if (fno.fattrib & AM_DIR)
       printf("   <dir>  %s\n", fno.fname);
     else
@@ -128,12 +151,82 @@ drawpic("out.bmp");
 
   rc = disk_ioctl(0,GET_SECTOR_COUNT,&retval);
   printf("%d %d\n",rc,retval);
+  
+  
+  
+  
+  //Declare nunchuk struct.  access elements of this to see output
+  nunchuk_t n;
+  short rotation = 0; //this is the rotating selector.
+  
+  
+  float acc[3];
+  float pitch,roll;
+  char *pictures[2];
+  pictures[0] = "ouput.bmp";
+  pictures[1] = "1.bmp";
+  pictures[2] = "2.bmp";
+  while (1) {
+    f3d_accel_read(acc);
+    pitch = atan(acc[0]/sqrt(acc[1]*acc[1]+acc[2]*acc[2]));
+    pitch = pitch * 180 / M_PI;
+    roll = atan(acc[1]/sqrt(acc[0]*acc[0]+acc[2]*acc[2]));
+    roll *= 180 / M_PI;
+    
+    f3d_nunchuk_read(&n);
+    
+    
+    switch(rotation) {
+    case 0:
+      //Check if button is pushed.  if yes move to different picture
+      if(n.c == 1 || n.jx > 140){
+    rotation =1;
+    drawpic(pictures[rotation]);
+      }
+      if(n.z == 1 || n.jx < 100){
+    rotation = 2;
+    drawpic(pictures[rotation]);
+      }
+      break;  
+    case 1:
+      //Check if button is pushed.  if yes move to different picture
+      if(n.c == 1 || n.jx > 140){
+    rotation = 2;
+    drawpic(pictures[rotation]);
+      }
+      if(n.z == 1 || n.jx < 100){
+    rotation = 0;
+    drawpic(pictures[rotation]);
+      }
+      break;
+    case 2:
+      //Check if button is pushed.  if yes move to different picture
+      if(n.c == 1 || n.jx > 140){
+    rotation = 0;
+      }
+      if(n.z == 1 || n.jx < 100){
+    rotation = 1;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+}
 
+#ifdef USE_FULL_ASSERT
+void assert_failed(uint8_t* file, uint32_t line) {
+  /* Infinite loop */
+  /* Use GDB to find out why we're here */
   while (1);
 }
+#endif
+
 void drawpic(char* pic) {
-  FRESULT rc;
-  UINT br;
+  FRESULT rc;                        /* Result code */
+  UINT bw, br;
+
+  
   //***************************
   //lab work here
   f3d_lcd_fillScreen(WHITE);
@@ -141,60 +234,69 @@ void drawpic(char* pic) {
   rc = f_open(&Fil, pic, FA_READ);
   if (rc) die(rc);
   printf("\nReading the picture.\n");
+  
   rc = f_read(&Fil, &magic, sizeof(magic), &br);
   printf("Magic %c%c\n", magic.magic[0], magic.magic[1]); 
   rc = f_read(&Fil, &header, sizeof(header), &br);
   printf("file size %d offset %d\n", header.filesz, header.bmp_offset);
   rc = f_read(&Fil, &info, sizeof(info), &br);
   printf("Width %d Height %d, bitspp %d\n", info.width, info.height, info.bitspp);
- 
-  //uint16_t color;
-  uint8_t x = 0, y = 0;
-  //uint16_t* matrix[info.height];
-  uint16_t* matrix = (uint16_t*)malloc(sizeof(uint16_t) * info.height * info.width);
-  int count = 0;
-  //uint16_t** matrix = (uint16_t **)malloc(sizeof(*matrix) * info.height);
-  for(y=0;y<info.height;y++) {
-    //matrix[y] = (uint16_t *)malloc(sizeof(**matrix) * info.width);
-    for(x=0;x<info.width;x++) {
-      //printf("x: %d y: %d\n",x,y);
-      rc = f_read(&Fil, &pix, sizeof(pix), &br);
-      matrix[count++] = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
-    }
-    //matrix[y][x] = '\0';
-  }
-  printf("read Done\n");
-  //uint16_t colors[ST7735_width];
- 
-  int i,j;
-  count = 0;
-  for(j=0;j<info.height;j++) {
-    //for(i=0;i<info.width;j++) {
-    //  colors[i] = matrix[j];
-    //}
-    printf("j: %d\n",j);
-    //f3d_lcd_pushColor(matrix[j],info.width);
-    for(i=0;i<info.width;i++) f3d_lcd_drawPixel(i,j,matrix[count++]);
-    //free(matrix[j]);
-  }
-  free(matrix);
   
-
+  uint16_t color;
+  uint8_t x = 0, y = 0;
+  uint16_t colors[ST7735_width];
+  
+  
+  //Upside From Right
+  //f3d_lcd_setAddrWindow (0,0,168,128,7);
+  
+  //left
+  //f3d_lcd_setAddrWindow (0,0,168,128,1);
+  
+//up
+//f3d_lcd_setAddrWindow (0,0,168,128,0);
+  
+//down
+//f3d_lcd_setAddrWindow (0,0,168,128,5);
+  
+  
+  while(y < info.height) {
+    
+    rc = f_read(&Fil, &pix, sizeof(pix), &br);
+    color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+    colors[x] = color;
+    
+    if(x == info.width) {
+      x=0;
+      f3d_lcd_pushColor(colors,info.width);
+      y++;
+    }
+    x++;
+  }
+  
   if (rc) die(rc);
   printf("\nClose the file.\n");
   rc = f_close(&Fil);
   if (rc) die(rc);
-
+  
   //***************************
+  
 }
 
-
-#ifdef USE_FULL_ASSERT
-void assert_failed(uint8_t* file, uint32_t line) {
-/* Infinite loop */
-/* Use GDB to find out why we're here */
-  while (1);
-}
-#endif
 
 /* main.c ends here */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
