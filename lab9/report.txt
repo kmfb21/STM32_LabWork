@@ -5,41 +5,23 @@ Because pb6 and pb7 are initialized in other files which are done in last labs
 
 Q2) What are the major differences between these two functions and what does that imply about communicating with the nunchuk?
 
-is the f3d_nunchuk_read's us the *n as a pointer to do the structure dereference to z and c flag in the switch part, which implies the the communication in this function is using pointer to switch the properties of the nunchuk.
 
 Q3) What do all of these variables correspond to in the nunchuk?
+  unsigned char jx;//bar's x axis
+  unsigned char jy;//bar's y axis
+  unsigned short ax;//analog x axis.
+  unsigned short ay;//analog y axis
+  unsigned short az;//analog z axis
+  unsigned char c;//c button
+  unsigned char z;//z button
 
-typedef struct nunchuk_data { 
-  unsigned char jx; //the bar's x axis
-  unsigned char jy; //the bar's y axis
-  unsigned short ax; // the analog x axis.
-  unsigned short ay; // the analog y axis
-  unsigned short az; // the analog z axis
-  unsigned char c; // the c button
-  unsigned char z; // the z button
-} nunchuk_t; 
+Q4)
+we use data[5] & 0x03 to get last two bits of data[5]
+c is the last bit, z is second last bit
+so 0b00 -> z:0 c:0
+0b01 -> z:0 c:1
+0b10 -> z:1 c:0
+0b11 -> z:1 c:1
 
-Q4) switch (data[5] & 0x03) {
-  case 2:
-    n->z = 1;
-    n->c = 0;
-    break;
-  case 1:
-    n->z = 0;
-    n->c = 1;
-    break;
-  case 0:
-    n->z = 1;
-    n->c = 1;
-    break;
-  case 3:
-    n->z = 0;
-    n->c = 0;
-    break;
-  }
-
-the data[5] is the button c in the nunchuk data and the different cases represents the time 
-that we click on the button, and do the bitwise AND with 0x03 for each cases, and the different
- cases set different flag to the data[5]
-
-difficulties: I had troubles displaying nunchuk data but finally solve it by configuring that it is similar to accel_data.
+difficulties: the range of accel of nunchuck is different from that in board,
+so it took us some time to fix it.
