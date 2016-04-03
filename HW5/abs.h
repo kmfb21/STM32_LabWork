@@ -1,12 +1,12 @@
 /* abs.h --- 
  * 
  * Filename: abs.h
- * Description: 
+ * Description: test function of HW5
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Tue Oct 27 12:27:32 2015
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 04/03/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
