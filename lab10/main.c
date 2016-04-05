@@ -2,11 +2,10 @@
  * 
  * Filename: main.c
  * Description: This is the main file for the SD card reader.  We print the image to the STM LCD then using the accelerometer, rotate the image so it is upright.  We use the nunchuck joystick and buttons to revolve through 3 different images
- * Author: Bo Fang and Carson Schwalm
- * Maintainer: 
+ * Author: Bo Fang(bofang) and Carson Schwalm(cschwalm)
  * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 04/04/2016
+ *           By: Bo Fang(bofang) and Carson Schwalm(cschwalm)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
@@ -45,7 +44,7 @@ struct bmpfile_header header;
 BITMAPINFOHEADER info;
 struct bmppixel pix;
 
-void drawpic(char* pic);
+void drawpic(char* pic, short dir);
 
 void die (FRESULT rc) {
   printf("Failed with rc=%u.\n", rc);
@@ -68,39 +67,21 @@ int main(void) {
   unsigned int retval;
   
 
+  f3d_uart_init();
+  f3d_lcd_init();
+  f3d_delay_init();
+  f3d_rtc_init();
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
-
-
-
-  f3d_uart_init();
-  f3d_gyro_init();
-  f3d_lcd_init();
-  f3d_lcd_fillScreen(WHITE); //set background  
-  f3d_led_init();
   f3d_i2c1_init();
   delay(10);
   f3d_accel_init();
   delay(10);
-  //  f3d_uart_init();
-  //f3d_lcd_init();
-  //f3d_delay_init();
+  f3d_nunchuk_init();
   delay(10);
-  f3d_rtc_init();
-  delay(10);
-  //f3d_accel_init();
-printf("reach here");
-//delay(10);
-//  f3d_nunchuk_init();
-
-
-
 
   f_mount(0, &Fatfs);                /* Register volume work area (never fails) */
-
-  drawpic("1.bmp");
-
 
   printf("\nOpen an existing file (message.txt).\n");
   rc = f_open(&Fil, "MESSAGE.TXT", FA_READ);
@@ -152,18 +133,16 @@ printf("reach here");
   rc = disk_ioctl(0,GET_SECTOR_COUNT,&retval);
   printf("%d %d\n",rc,retval);
   
-  
-  
-  
   //Declare nunchuk struct.  access elements of this to see output
   nunchuk_t n;
   short rotation = 0; //this is the rotating selector.
-  
-  
+  short direction = 0; //this is the direction of picture
+  drawpic("out.bmp",direction);  
+
   float acc[3];
   float pitch,roll;
-  char *pictures[2];
-  pictures[0] = "ouput.bmp";
+  char *pictures[3];
+  pictures[0] = "out.bmp";
   pictures[1] = "1.bmp";
   pictures[2] = "2.bmp";
   while (1) {
@@ -174,42 +153,41 @@ printf("reach here");
     roll *= 180 / M_PI;
     
     f3d_nunchuk_read(&n);
-    
-    
-    switch(rotation) {
-    case 0:
-      //Check if button is pushed.  if yes move to different picture
-      if(n.c == 1 || n.jx > 140){
-    rotation =1;
-    drawpic(pictures[rotation]);
-      }
-      if(n.z == 1 || n.jx < 100){
-    rotation = 2;
-    drawpic(pictures[rotation]);
-      }
-      break;  
-    case 1:
-      //Check if button is pushed.  if yes move to different picture
-      if(n.c == 1 || n.jx > 140){
-    rotation = 2;
-    drawpic(pictures[rotation]);
-      }
-      if(n.z == 1 || n.jx < 100){
-    rotation = 0;
-    drawpic(pictures[rotation]);
-      }
-      break;
-    case 2:
-      //Check if button is pushed.  if yes move to different picture
-      if(n.c == 1 || n.jx > 140){
-    rotation = 0;
-      }
-      if(n.z == 1 || n.jx < 100){
-    rotation = 1;
-      }
-      break;
-    default:
-      break;
+    //Check if button is pushed.  if yes move to different picture
+    if(n.c == 1 || n.jx > 140){
+      while(n.c == 1 || n.jx > 140) f3d_nunchuk_read(&n);
+      rotation++;
+      rotation %= 3;
+      //printf("%s\n",pictures[rotation]);
+      drawpic(pictures[rotation], direction);
+    }
+    if(n.z == 1 || n.jx < 100){
+      while(n.z == 1 || n.jx < 100) f3d_nunchuk_read(&n);
+      rotation--;
+      rotation = (rotation + 3)%3;
+      //printf("%s\n",pictures[rotation]);
+      drawpic(pictures[rotation], direction);
+    }
+    printf("pitch: %.2f roll: %.2f\n",acc[0],acc[1]);
+    if(acc[0]>0.6) {
+      direction = 0;
+      drawpic(pictures[rotation], direction);
+      while(acc[0]>0.6) f3d_accel_read(acc);
+    }
+    if(acc[0]<-0.6) {
+      direction = 2;
+      drawpic(pictures[rotation], direction);
+      while(acc[0]<-0.6) f3d_accel_read(acc);
+    }
+    if(acc[1]>0.6) {
+      direction = 3;
+      drawpic(pictures[rotation], direction);
+      while(acc[1]>0.6) f3d_accel_read(acc);
+    }
+    if(acc[1]<-0.6) {
+      direction = 1;
+      drawpic(pictures[rotation], direction);
+      while(acc[1]<-0.6) f3d_accel_read(acc);
     }
   }
 }
@@ -222,16 +200,14 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
-void drawpic(char* pic) {
+void drawpic(char* pic, short dir) {
   FRESULT rc;                        /* Result code */
   UINT bw, br;
 
-  
-  //***************************
-  //lab work here
   f3d_lcd_fillScreen(WHITE);
   printf("\nOpen an BMP file.\n");
   rc = f_open(&Fil, pic, FA_READ);
+  printf("read success\n");
   if (rc) die(rc);
   printf("\nReading the picture.\n");
   
@@ -242,61 +218,78 @@ void drawpic(char* pic) {
   rc = f_read(&Fil, &info, sizeof(info), &br);
   printf("Width %d Height %d, bitspp %d\n", info.width, info.height, info.bitspp);
   
+  int counter,x1,y1,xf,yf,tmp;
   uint16_t color;
   uint8_t x = 0, y = 0;
-  uint16_t colors[ST7735_width];
-  
-  
-  //Upside From Right
-  //f3d_lcd_setAddrWindow (0,0,168,128,7);
-  
-  //left
-  //f3d_lcd_setAddrWindow (0,0,168,128,1);
-  
-//up
-//f3d_lcd_setAddrWindow (0,0,168,128,0);
-  
-//down
-//f3d_lcd_setAddrWindow (0,0,168,128,5);
-  
-  
-  while(y < info.height) {
-    
-    rc = f_read(&Fil, &pix, sizeof(pix), &br);
-    color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
-    colors[x] = color;
-    
-    if(x == info.width) {
-      x=0;
-      f3d_lcd_pushColor(colors,info.width);
-      y++;
+  uint16_t colors[info.width];
+  switch(dir) {
+  case 3:
+    tmp = info.height;
+    info.height = info.width;
+    info.width = tmp;
+    //Upside From Right
+    f3d_lcd_setAddrWindow (0,0,128,160,7);
+    info.width = 128;
+    info.height = 129;
+    for(y=0;y<info.height;y++) {
+      for(x=0;x<info.width;x++) {
+	rc = f_read(&Fil, &pix, sizeof(pix), &br);
+	color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+	colors[x] = color;
+      }
+      f3d_lcd_pushColor(colors,info.width+1);
     }
-    x++;
+    break;
+  case 0:
+    tmp = info.height;
+    info.height = info.width;
+    info.width = tmp;
+    //botton
+    f3d_lcd_setAddrWindow (0,0,128,160,4);
+    for(y=0;y<info.height;y++) {
+      for(x=0;x<info.width;x++) {
+	rc = f_read(&Fil, &pix, sizeof(pix), &br);
+	color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+	colors[x] = color;
+      }
+      f3d_lcd_pushColor(colors,info.width);
+    }
+    break;
+  case 2:
+    //up
+    f3d_lcd_setAddrWindow (0,0,128,160,0);
+    for(y=0;y<info.height;y++) {
+      for(x=0;x<info.width;x++) {
+	rc = f_read(&Fil, &pix, sizeof(pix), &br);
+	color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+	colors[x] = color;
+      }
+      f3d_lcd_pushColor(colors,info.width);
+    }
+    break;
+  case 1:
+    //left
+    f3d_lcd_setAddrWindow (0,0,128,160,5);
+    info.width = 128;
+    info.height = 129;
+    for(y=0;y<info.height;y++) {
+      for(x=0;x<info.width;x++) {
+	rc = f_read(&Fil, &pix, sizeof(pix), &br);
+	color = ((pix.r >> 3) << 11) | ((pix.g >> 2) << 5) | (pix.b >> 3);
+	colors[x] = color;
+      }
+      f3d_lcd_pushColor(colors,info.width+1);
+    }
+    break;
+  default:
+    break;
   }
-  
   if (rc) die(rc);
   printf("\nClose the file.\n");
   rc = f_close(&Fil);
   if (rc) die(rc);
-  
-  //***************************
-  
 }
 
 
 /* main.c ends here */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

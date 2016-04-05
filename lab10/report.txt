@@ -1,0 +1,19 @@
+1: What are we doing here and how does it relate to what we know about SPI?
+   We are using i2c to read SD card, which is same way of lcd.
+
+2:  Explain how you might use the *f3d_delay_uS()* function within the *delay()* function to replace the delay loop
+  below. What would you expect to be the advantage of using a timer over a delay loop?
+    makes the time more accurate.
+
+3: Why might DMA be important in improving the performance of your image display application?
+   DMA frees up processor resources, it means we can use outside memory like SD cards and pull from there for our application
+
+4: Explain how the corruption of an entry in the table can cause part of a file to be lost.
+   Entries also link to other entries in the file system, if part of it is lost, the whole will lose
+
+5: What is the difference between FAT16 and FAT32? 
+   Fat32 can more efficently allocate diskspace 
+   work with more disk sizes than fat16.
+
+dificulties: we spent most of time in rotation of, because we didn't know how to stretch a picture.
+but finally we were told that we don't need to stretch that, just give up the remain part.
