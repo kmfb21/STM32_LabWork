@@ -1,0 +1,7 @@
+Difficulties [5]:
+
+we met difficulty when creating the queue
+Because queue has 32 position, it is difficlut to deal with head and tail if we want to use every position in it.
+
+What did you learn [5]:
+I learned Circular Queues, and interrupts in stm32
