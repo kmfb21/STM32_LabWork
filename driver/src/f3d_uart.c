@@ -71,7 +71,7 @@ void USART1_IRQHandler(void) {
                                    // throw away data and perhaps flag status
   }
   if (USART_GetFlagStatus(USART1,USART_FLAG_TXE)) {
-    if (dequeue(&txbuf,&ch)) {
+    if (dequeue(&txbuf)) {
       USART_SendData(USART1,ch);
     }
     else {
@@ -91,9 +91,10 @@ int putchar(int c) {
 } 
 //gets a character
 int getchar(void) {
-  int data;
-  while(!dequeue(&rxbuf,&data));
-  return data;
+  int ch;
+  while(queue_empty(&rxbuf));
+  ch = dequeue(&rxbuf);
+  return ch;
 
 }
 void flush_uart(void) {

@@ -62,14 +62,15 @@ int enqueue (queue_t *buf, int data) {
   return 1;
 }
 
-int dequeue (queue_t *buf, int *data) {
+int dequeue (queue_t *buf) {
+  int result;
   if(queue_empty(buf)){
     return 0;
   } else {
-    *data = buf->buffer[buf->tail];
+    result = buf->buffer[buf->tail];
     buf->tail = ((buf->tail + 1) == QUEUE_SIZE) ? 0 : buf->tail + 1;
   }
-  return 1;
+  return result;
 }
 
 int queue_empty(queue_t *buf) {
