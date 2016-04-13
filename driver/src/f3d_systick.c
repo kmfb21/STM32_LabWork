@@ -56,7 +56,6 @@ void SysTick_Handler(void) {
   }
   
   //led part of lab
-  /*
   if(user_btn_read()){
     //btn pressed
     SysTick_Config(SystemCoreClock/10);
@@ -66,7 +65,6 @@ void SysTick_Handler(void) {
   f3d_led_off(led);
   led = (led+1) % 9;
   f3d_led_on(led);
-  */
 }
 
 /* f3d_systick.c ends here */
