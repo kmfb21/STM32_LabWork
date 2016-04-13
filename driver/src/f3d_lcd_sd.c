@@ -40,6 +40,10 @@
 static uint8_t madctlcurrent = MADVAL(MADCTLGRAPHICS);
 
 void f3d_lcd_sd_interface_init(void) {
+
+  /**********lab12**********/
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+
  /* vvvvvvvvvvv pin initialization for the LCD goes here vvvvvvvvvv*/ 
   
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
@@ -80,7 +84,6 @@ void f3d_lcd_sd_interface_init(void) {
   SPI_Init(SPI2, &SPI_InitStructure);
   SPI_RxFIFOThresholdConfig(SPI2, SPI_RxFIFOThreshold_QF);
   SPI_Cmd(SPI2, ENABLE);
-  
 } 
 
 
@@ -183,54 +186,127 @@ static void LcdWrite16(char dc,const uint16_t *data,int cnt) {
   GPIO_SetBits(LCD_PORT,GPIO_PIN_SCE);
 }
 
-int spiReadWrite(SPI_TypeDef *SPIx,uint8_t *rbuf, const uint8_t *tbuf, int cnt, uint16_t speed) {
+int spiReadWrite(SPI_TypeDef *SPIx, uint8_t *rbuf, const uint8_t *tbuf, int cnt, uint16_t speed) {
   int i;
-  int timeout;
+  SPIx->CR1 = (SPIx->CR1 & ~SPI_BaudRatePrescaler_256) | speed;
 
-  SPIx->CR1 = (SPIx->CR1&~SPI_BaudRatePrescaler_256)|speed;
-  for (i = 0; i < cnt; i++){
-    if (tbuf) {
-      SPI_SendData8(SPIx,*tbuf++);
-    } 
-    else {
-      SPI_SendData8(SPIx,0xff);
-    }
-    timeout = 100;
-    while (SPI_I2S_GetFlagStatus(SPIx,SPI_I2S_FLAG_RXNE) == RESET);
-    if (rbuf) {
-      *rbuf++ = SPI_ReceiveData8(SPIx);
-    } 
-    else {
-      SPI_ReceiveData8(SPIx);
-    }
+  if ((cnt > 4) && !(cnt & 1)) {
+    return xchng_datablock(SPIx, 0, tbuf, rbuf , cnt);
   }
-  return i;
+  else {
+    for (i = 0; i < cnt; i++){
+      SPI_SendData8(SPIx, tbuf ? *tbuf++ : 0xff);
+      while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_RXNE) == RESET);
+      if (rbuf) {
+    *rbuf++ = SPI_ReceiveData8(SPIx);
+      } else  {
+    SPI_ReceiveData8(SPIx);
+      }
+    }
+    return i;
+  }
 }
 
-int spiReadWrite16(SPI_TypeDef *SPIx,uint8_t *rbuf, const uint16_t *tbuf, int cnt, uint16_t speed) {
-  int i;
-  
-  SPIx->CR1 = (SPIx->CR1&~SPI_BaudRatePrescaler_256)|speed;
-  SPI_DataSizeConfig(SPIx, SPI_DataSize_16b);
+static int xchng_datablock(SPI_TypeDef *SPIx, int half, const void *tbuf, void *rbuf, unsigned count) {
+  DMA_InitTypeDef DMA_InitStructure;
+  uint16_t dummy[] = {0xffff};
 
-  for (i = 0; i < cnt; i++){
-    if (tbuf) {
-      //      printf("data=0x%4x\n\r",*tbuf);
-      SPI_I2S_SendData16(SPIx,*tbuf++);
-    } 
-    else {
-      SPI_I2S_SendData16(SPIx,0xffff);
-    }
-    while (SPI_I2S_GetFlagStatus(SPIx,SPI_I2S_FLAG_RXNE) == RESET);
-    if (rbuf) {
-      *rbuf++ = SPI_I2S_ReceiveData16(SPIx);
-    } 
-    else {
-      SPI_I2S_ReceiveData16(SPIx);
+  DMA_Channel_TypeDef *rxChan;
+  DMA_Channel_TypeDef *txChan;
+  uint32_t dmaflag;
+
+  if (count & 1)
+    return -1;
+
+  if (SPIx == SPI1) {
+    rxChan = DMA1_Channel2;
+    txChan = DMA1_Channel3;
+    dmaflag = DMA1_FLAG_TC2;
+  }
+  else if (SPIx == SPI2) {
+    rxChan = DMA1_Channel4;
+    txChan = DMA1_Channel5;
+    dmaflag = DMA1_FLAG_TC4;
+  }
+  else
+    return -1;
+
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&(SPIx->DR));
+  if (half) {
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+  }
+  else {
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  }
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_BufferSize = count;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+
+  DMA_DeInit(rxChan);
+  DMA_DeInit(txChan);
+
+  if (rbuf) {
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)rbuf;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  }
+  else {
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) dummy;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+  }
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_Init(rxChan, &DMA_InitStructure);
+
+  if (tbuf) {
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)tbuf;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  }
+  else {
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) dummy;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+  }
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_Init(txChan, &DMA_InitStructure);
+
+  // Enable channels
+  DMA_Cmd(rxChan, ENABLE);
+  DMA_Cmd(txChan, ENABLE);
+
+  // Enable SPI TX/RX request
+  SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, ENABLE);
+
+  // Wait for completion
+  while (DMA_GetFlagStatus(dmaflag) == RESET) { ; }
+
+  // Disable channels
+  DMA_Cmd(rxChan, DISABLE);
+  DMA_Cmd(txChan, DISABLE);
+  SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Rx | SPI_I2S_DMAReq_Tx, DISABLE);
+  return count;
+}
+
+int spiReadWrite16(SPI_TypeDef *SPIx, uint16_t *rbuf, const uint16_t *tbuf, int cnt, uint16_t speed) {
+  int i;
+  SPIx->CR1 = (SPIx->CR1 & ~SPI_BaudRatePrescaler_256) | speed;
+  SPI_DataSizeConfig(SPIx, SPI_DataSize_16b);
+  if ((cnt > 4) && !(cnt & 3)) {
+    i =  xchng_datablock(SPIx, 1, tbuf, rbuf , cnt);
+  }
+  else {
+    for (i = 0; i < cnt; i++){
+      SPI_I2S_SendData16(SPIx, tbuf ? *tbuf++ : 0xffff);
+      while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_RXNE) == RESET);
+      if (rbuf) {
+    *rbuf++ = SPI_I2S_ReceiveData16(SPIx);
+      } else {
+    SPI_I2S_ReceiveData16(SPIx);
+      }
     }
   }
   SPI_DataSizeConfig(SPIx, SPI_DataSize_8b);
-
   return i;
 }
 
@@ -280,6 +356,7 @@ void f3d_lcd_fillScreen(uint16_t color) {
   }
 }
 */
+/*  courtesy of bbmerric */
 void f3d_lcd_fillScreen(uint16_t color) {
   uint8_t y;
   uint16_t x[ST7735_width];
