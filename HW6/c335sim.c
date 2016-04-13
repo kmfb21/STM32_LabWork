@@ -69,7 +69,9 @@ int SDL_main(int argc, char *argv[])
   //Set up screen
 
   init_screen(portrait);
-  // init_screen(landscape);
+  
+  if(argc==3 && strcmp(argv[1],"LANDSCAPE")==0)
+    init_screen(landscape);
 
   SDL_AddTimer(50, signal_handler, 0);
 

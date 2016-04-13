@@ -3,10 +3,10 @@
  * Filename: screen.c
  * Description: 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Mon Aug 11 11:02:01 2014
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 04/13/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
@@ -38,7 +38,7 @@
 
 const int cw = 5;
 const int ch = 8;
-
+extern int sign;
 extern uint8_t ASCII[];
 
 /*fills the screen with a color*/
@@ -60,6 +60,8 @@ void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t ba
 
   uint16_t buf[cw * ch];
 
+  if(sign) ST7735_setAddrWindow(y, 155-x, y+cw-1, 155-x+ch-1, MADCTLGRAPHICS);
+  else 
   ST7735_setAddrWindow(x, y, x+cw-1, y+ch-1, MADCTLGRAPHICS);
 
   for (i = 0; i < cw*ch; i++)
@@ -90,6 +92,9 @@ void drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t backgrou
 void drawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
   int i;
   uint16_t buf[width*depth];
+
+  if(sign) ST7735_setAddrWindow(y, 155-x-width, y+width-1, 155-x-width+depth-1, MADCTLGRAPHICS);
+  else
   ST7735_setAddrWindow(x, y, x+width-1, y+depth-1, MADCTLGRAPHICS);
   for (i = 0; i < width*depth; i++) {
     buf[i] = color;
