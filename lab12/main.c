@@ -96,11 +96,20 @@ int main(void) {
   setvbuf(stderr, NULL, _IONBF, 0);
 
   f3d_uart_init();
+  f3d_lcd_init();
+  f3d_i2c1_init();
+  f3d_accel_init();
+  delay(10);
+  f3d_nunchuk_init();
+  delay(10);
+
   f3d_timer2_init();
   f3d_dac_init();
   f3d_delay_init();
   f3d_rtc_init();
   f3d_systick_init();
+
+  f3d_lcd_fillScreen(RED);
 
   printf("Reset\n");
   
@@ -151,7 +160,7 @@ int main(void) {
     
     // Play it !
     
-    //      audioplayerInit(fck.nSamplesPerSec);
+    //audioplayerInit(fck.nSamplesPerSec);
     
     f_read(&fid, Audiobuf, AUDIOBUFSIZE, &ret);
     hd.cksize -= ret;
