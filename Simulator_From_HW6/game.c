@@ -18,8 +18,9 @@ rect_t ball;
 
 int ball_vx = 1;
 int ball_vy = 2;
-extern uint16_t tankimg[32][32];
-/*The event loop that handles the key input*/
+
+extern uint16_t tankimg[16][16];
+
 void event_loop(void) {
   static int paddle_left_move = 0; 
   static int paddle_right_move = 0;
@@ -102,16 +103,21 @@ int pressed() {
 int c335_main( int argc, char *argv[] ) {
 
   int i,j;
-  if(argc==3) {
-    //f3d_lcd_fillScreen(WHITE);
-    rect_t test;
-    initRect(&test, 0,0,128,160,BLUE);
-    for(i=6;i<22;i++)
-      for(j=8;j<24;j++)
-	f3d_lcd_drawPixel(j,i,tankimg[i][j]);
-    pressed();
-    return (0);
-  }
+  Tank t;
+  initTank(&t,10,20,0);
+  t.head=0;
+  drawTank(&t);
+  initTank(&t,30,20,0);
+  t.head=1;
+  drawTank(&t);
+  initTank(&t,50,20,0);
+  t.head=2;
+  drawTank(&t);
+  initTank(&t,70,20,0);
+  t.head=3;
+  drawTank(&t);
+  pressed();
+  return (0);
 
   f3d_lcd_fillScreen(BLACK);
   initRect(&left_paddle,0,ST7735_height/2-(PADDLE_HEIGHT/2),PADDLE_THICKNESS,PADDLE_HEIGHT,WHITE);

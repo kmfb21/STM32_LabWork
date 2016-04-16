@@ -25,8 +25,6 @@ main(int argc, char *argv[]) {
       read(f, (void *) &pix, sizeof(pix));
       //printf("%d %d %d", pix.b, pix.g, pix.r);
       color=((pix.r>>3)<<11)|((pix.g>>2)<<5)|(pix.b>>3);
-      if(color>0x1000) printf("#");
-      else printf(" ");
       colors[i][j]=color;
     }
     printf("\n");
@@ -35,13 +33,13 @@ main(int argc, char *argv[]) {
   FILE* fw;
   fw=fopen("../tank.c","w");
   fprintf(fw,"#include\"tank.h\"\n#include<stdint.h>\n");
-  fprintf(fw,"uint16_t tankimg[32][32] = {\n");
-  for(i=0;i<info.height;i++) {
-    fprintf(fw,"{0x%x",colors[i][0]);
-    for(j=1;j<info.width;j++) {
+  fprintf(fw,"uint16_t tankimg[16][16] = {\n");
+  for(i=6;i<22;i++) {
+    fprintf(fw,"{0x%x",colors[i][8]);
+    for(j=9;j<24;j++) {
       fprintf(fw,",0x%x",colors[i][j]);
     }
-    if(i==info.height-1) fprintf(fw,"}\n");
+    if(i==21) fprintf(fw,"}\n");
     else fprintf(fw,"},\n");
   }
   fprintf(fw,"};\n");
