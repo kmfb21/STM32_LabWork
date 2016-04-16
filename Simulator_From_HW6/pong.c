@@ -1,39 +1,3 @@
-/* pong.c --- 
- * 
- * Filename: pong.c
- * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: Bo Fang(bofang)
- * Created: Mon Aug 11 10:50:08 2014
- * Last-Updated: 04/13/2016
- *           By: Bo Fang(bofang)
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Copyright (c) 2004-2007 The Trustees of Indiana University and 
- * Indiana University Research and Technology Corporation.  
- * 
- * All rights reserved. 
- * 
- * Additional copyrights may follow 
- */
-
-/* Code: */
-
 #include "c335sim.h"
 #include "rect.h"
 #include "screen.h"
@@ -207,5 +171,3 @@ int c335_main( int argc, char *argv[] ) {
     Delay(EVENT_LOOP_TIME);
   }
 } 
-
-/* pong.c ends here */

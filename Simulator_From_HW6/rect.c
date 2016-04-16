@@ -1,44 +1,7 @@
-/* rect.c --- 
- * 
- * Filename: rect.c
- * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: Bo Fang(bofang)
- * Created: Wed Aug 13 10:50:11 2014
- * Last-Updated: 04/13/2016
- *           By: Bo Fang(bofang)
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Copyright (c) 2004-2007 The Trustees of Indiana University and 
- * Indiana University Research and Technology Corporation.  
- * 
- * All rights reserved. 
- * 
- * Additional copyrights may follow 
- */
-
-/* Code: */
-
 #include "rect.h"
 
 extern void drawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color);
 
-/*initializes a rectangle*/
 void initRect(rect_t *rect, uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
   rect->pos_x = x;
   rect->pos_y = y;
@@ -47,21 +10,17 @@ void initRect(rect_t *rect, uint8_t x, uint8_t y, uint8_t width, uint8_t depth, 
   rect->color = color;
   drawRect(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
 }
-/*erases a rectangle*/
 void eraseRect(rect_t *rect, uint16_t background_color) {
   drawRect(rect->pos_x, rect->pos_y, rect->width, rect->depth, background_color);
 }
-/*redraws a rectangle*/
 void redrawRect(rect_t *rect) {
   drawRect(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
 }
-/*moves a rectangle given a rectange and the velocity in both the x and y direction (as well as a background color)*/
 int moveRect(rect_t *rect, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
   int xtemp;
   int ytemp;
   int collision = 0;
 
-  // erase current rectangle 
   drawRect(rect->pos_x, rect->pos_y, rect->width, rect->depth, background_color);
 
   // update x,y postion based on deltas, 
@@ -90,5 +49,3 @@ int moveRect(rect_t *rect, int8_t delta_x, int8_t delta_y, uint16_t background_c
   drawRect(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
   return (collision);
 }
-
-/* rect.c ends here */

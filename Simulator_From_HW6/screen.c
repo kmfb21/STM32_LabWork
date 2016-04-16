@@ -1,47 +1,9 @@
-/* screen.c --- 
- * 
- * Filename: screen.c
- * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: Bo Fang(bofang)
- * Created: Mon Aug 11 11:02:01 2014
- * Last-Updated: 04/13/2016
- *           By: Bo Fang(bofang)
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Copyright (c) 2004-2007 The Trustees of Indiana University and 
- * Indiana University Research and Technology Corporation.  
- * 
- * All rights reserved. 
- * 
- * Additional copyrights may follow 
- */
-
-/* Code: */
-
 #include "screen.h"
 
 const int cw = 5;
 const int ch = 8;
 extern int sign;
 extern uint8_t ASCII[];
-
-/*fills the screen with a color*/
 
 void fillScreen(uint16_t color) {
   uint8_t x,y;
@@ -54,7 +16,7 @@ void fillScreen(uint16_t color) {
     ST7735_pushColor(buf,ST7735_width);
   }
 }
-/*draws a character. takes x and y coordinate, the character to draw and the color of the character and background color*/
+
 void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t background) {
   int i, j;
 
@@ -77,7 +39,7 @@ void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t ba
   }
   ST7735_pushColor(buf,cw*ch);
 }
-/*draws the string using draw character*/
+
 void drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t background) {
   while (c && *c) {
     drawChar(x, y, *c++, color, background);
@@ -88,7 +50,7 @@ void drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t backgrou
     }
   }
 }
-/*draws a rectangle with specified coordinates*/
+
 void drawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
   int i;
   uint16_t buf[width*depth];
@@ -101,10 +63,3 @@ void drawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color
   }
   ST7735_pushColor(buf,width*depth);
 }
-
-
-
-
-
-
-/* screen.c ends here */

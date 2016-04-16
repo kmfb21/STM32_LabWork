@@ -5,8 +5,6 @@
 void Delay(int);
 int c335_main(int argc, char *argv[]);
 
-// Graphics
-
 /*  Colors are 565 BGR (5 bits blue, 6 bits green, 5 bits red) */
 
 #define BLACK 0x0000
