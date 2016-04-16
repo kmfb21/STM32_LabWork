@@ -54,9 +54,6 @@ int SDL_main(int argc, char *argv[]) {
 	    SDL_INIT_JOYSTICK);
 
   init_screen(portrait);
-  
-  if(argc==3 && strcmp(argv[1],"LANDSCAPE")==0)
-    init_screen(landscape);
 
   SDL_AddTimer(50, signal_handler, 0);
   result = c335_main(argc, argv);
@@ -65,9 +62,9 @@ int SDL_main(int argc, char *argv[]) {
   return result;
 }
 
-void ST7735_setAddrWindow(uint16_t xs, uint16_t ys,
-			  uint16_t xe, uint16_t ye,
-			  uint8_t madctl) {
+void f3d_lcd_setAddrWindow(uint16_t xs, uint16_t ys,
+			   uint16_t xe, uint16_t ye,
+			   uint8_t madctl) {
   int w = xe-xs+1;  // 7735 xs..xe  inclusive
   int h = ye-ys+1;  //      ys..ye  inclusive
   
@@ -122,7 +119,7 @@ static void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
   }
 }
 
-void ST7735_pushColor(uint16_t *color, int cnt) {
+void f3d_lcd_pushColor(uint16_t *color, int cnt) {
   uint16_t *pixels = window->pixels;
   int w = window->w;
   int h = window->h;

@@ -1,5 +1,4 @@
 #include "c335sim.h"
-#include "rect.h"
 #include "screen.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,7 +78,7 @@ void event_loop(void) {
 void pong_game(void) {
   int collision;
 
-  drawString(40,60,"hit q to quit",WHITE,BLACK);
+  f3d_lcd_drawString(40,60,"hit q to quit",WHITE,BLACK);
   redrawRect(&left_paddle);
   redrawRect(&right_paddle);
   event_loop();
@@ -110,58 +109,14 @@ int pressed() {
     if(event.key.keysym.sym==SDLK_q) return 'q';
   }
 }
-int sign;
-/*Where the pong_game() is called the rectangels are initialized. */
+
 int c335_main( int argc, char *argv[] ) {
 
-  float x,y,z;
-  rect_t xR,yR,zR;
-  initRect(&xR,0,0,1,1,WHITE);
-  initRect(&yR,0,0,1,1,WHITE);
-  initRect(&zR,0,0,1,1,WHITE);
-  int c='n';
-  FILE* fr;
-  char writeData[10];
   if(argc==3) {
-
-    sign = strcmp(argv[1],"PORTRAIT");
-
-    fillScreen(WHITE);
-    printf("%s %s %s\n",argv[0],argv[1],argv[2]);
-    fr=fopen(argv[2], "r");
-    while(c!='q'){
-	
-      c = fscanf(fr,"%f %f %f",&x,&y,&z);
-      snprintf(writeData, 10, "%f", x);
-      drawString(1, 1, "x = ", BLACK, WHITE);
-      drawString(30, 1, writeData, BLACK, WHITE);
-      snprintf(writeData, 10, "%f", y);
-      drawString(1, 11, "y = ", BLACK, WHITE);
-      drawString(30, 11, writeData, BLACK, WHITE);
-      snprintf(writeData, 10, "%f", z);
-      drawString(1, 21, "z = ", BLACK, WHITE);
-      drawString(30, 21, writeData, BLACK, WHITE);
-      
-      drawChar(1,60,'x',MAGENTA,WHITE);
-      drawChar(1,80,'y',GREEN,WHITE);
-      drawChar(1,100,'z',CYAN,WHITE);
-      eraseRect(&xR,WHITE);
-      initRect(&xR,10,60,(uint8_t)(x*10),10,MAGENTA);
-      eraseRect(&yR,WHITE);
-      initRect(&yR,10,80,(uint8_t)(y*10),10,GREEN);
-      eraseRect(&zR,WHITE);
-      initRect(&zR,10,100,(uint8_t)(z*10),10,CYAN);
-
-      if(c==-1) drawString(1,40,"End of File! Press q",RED,WHITE);
-      else      drawString(1,40,"Press n to continue!",BLUE,WHITE);
-      c=pressed();
-    }
-    
-    fclose(fr);
     return (0);
   }
 
-  fillScreen(BLACK);
+  f3d_lcd_fillScreen(BLACK);
   initRect(&left_paddle,0,ST7735_height/2-(PADDLE_HEIGHT/2),PADDLE_THICKNESS,PADDLE_HEIGHT,WHITE);
   initRect(&right_paddle,ST7735_width-PADDLE_THICKNESS,ST7735_height/2-(PADDLE_HEIGHT/2),PADDLE_THICKNESS,PADDLE_HEIGHT,WHITE);
   initRect(&ball,ST7735_width/2-(BALL_DIM/2),ST7735_height/2-(BALL_DIM/2),BALL_DIM,BALL_DIM,WHITE);

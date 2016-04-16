@@ -3,12 +3,12 @@ CFLAGS=  $(shell  sdl-config --cflags) -g -I/opt/local/include -I.
 LDFLAGS= -g $(shell sdl-config --libs) -lSDL_gfx -lSDLmain -lm 
 CC=gcc
 
-OBJS = c335sim.o screen.o pong.o glcdfont.o rect.o
+OBJS = c335sim.o screen.o game.o glcdfont.o
  
-all: pong
+all: game
 
-pong: $(OBJS) 
-	$(CC) $(OBJS) -o pong $(LDFLAGS)
+game: $(OBJS) 
+	$(CC) $(OBJS) -o game $(LDFLAGS)
 
 clean:
-	rm -f $(OBJS) pong 
+	rm -f $(OBJS) game

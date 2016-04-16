@@ -2,29 +2,26 @@
 
 const int cw = 5;
 const int ch = 8;
-extern int sign;
 extern uint8_t ASCII[];
 
-void fillScreen(uint16_t color) {
+void f3d_lcd_fillScreen(uint16_t color) {
   uint8_t x,y;
   uint16_t buf[ST7735_width];
-  ST7735_setAddrWindow(0, 0, ST7735_width-1, ST7735_height-1, MADCTLGRAPHICS);
+  f3d_lcd_setAddrWindow(0, 0, ST7735_width-1, ST7735_height-1, MADCTLGRAPHICS);
   for (y=0; y < ST7735_height; y++) {
     for (x=0; x < ST7735_width; x++) {
       buf[x] = color;
     }
-    ST7735_pushColor(buf,ST7735_width);
+    f3d_lcd_pushColor(buf,ST7735_width);
   }
 }
 
-void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t background) {
+void f3d_lcd_drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t background) {
   int i, j;
 
   uint16_t buf[cw * ch];
 
-  if(sign) ST7735_setAddrWindow(y, 155-x, y+cw-1, 155-x+ch-1, MADCTLGRAPHICS);
-  else 
-  ST7735_setAddrWindow(x, y, x+cw-1, y+ch-1, MADCTLGRAPHICS);
+  f3d_lcd_setAddrWindow(x, y, x+cw-1, y+ch-1, MADCTLGRAPHICS);
 
   for (i = 0; i < cw*ch; i++)
     ((uint16_t *)buf)[i] = background;
@@ -37,12 +34,12 @@ void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint16_t ba
       byte >>= 1;
     }
   }
-  ST7735_pushColor(buf,cw*ch);
+  f3d_lcd_pushColor(buf,cw*ch);
 }
 
-void drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t background) {
+void f3d_lcd_drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t background) {
   while (c && *c) {
-    drawChar(x, y, *c++, color, background);
+    f3d_lcd_drawChar(x, y, *c++, color, background);
     x += cw + 1;
     if (x + cw >= ST7735_width) {
       y += ch+2;
@@ -51,15 +48,61 @@ void drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t backgrou
   }
 }
 
-void drawRect(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
+void f3d_lcd_drawRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
   int i;
   uint16_t buf[width*depth];
 
-  if(sign) ST7735_setAddrWindow(y, 155-x-width, y+width-1, 155-x-width+depth-1, MADCTLGRAPHICS);
-  else
-  ST7735_setAddrWindow(x, y, x+width-1, y+depth-1, MADCTLGRAPHICS);
+  f3d_lcd_setAddrWindow(x, y, x+width-1, y+depth-1, MADCTLGRAPHICS);
   for (i = 0; i < width*depth; i++) {
     buf[i] = color;
   }
-  ST7735_pushColor(buf,width*depth);
+  f3d_lcd_pushColor(buf,width*depth);
+}
+
+void initRect(rect_t *rect, uint8_t x, uint8_t y, uint8_t width, uint8_t depth, uint16_t color) {
+  rect->pos_x = x;
+  rect->pos_y = y;
+  rect->width = width;
+  rect->depth = depth;
+  rect->color = color;
+  f3d_lcd_drawRectangle(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
+}
+void eraseRect(rect_t *rect, uint16_t background_color) {
+  f3d_lcd_drawRectangle(rect->pos_x, rect->pos_y, rect->width, rect->depth, background_color);
+}
+void redrawRect(rect_t *rect) {
+  f3d_lcd_drawRectangle(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
+}
+int moveRect(rect_t *rect, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
+  int xtemp;
+  int ytemp;
+  int collision = 0;
+
+  f3d_lcd_drawRectangle(rect->pos_x, rect->pos_y, rect->width, rect->depth, background_color);
+
+  // update x,y postion based on deltas, 
+  xtemp = (int) (rect->pos_x + delta_x);   // cast as int to gain benefit of sign and larger size 
+  ytemp = (int) (rect->pos_y + delta_y);
+  if (xtemp < 0) {    
+    xtemp = 0;
+    collision = COLLISION_LEFT;
+  }
+  else if (xtemp > (ST7735_width - rect->width)) {
+    xtemp = ST7735_width - rect->width;
+    collision = COLLISION_RIGHT;
+  }
+  if (ytemp < 0) {    
+    ytemp = 0;
+    collision = COLLISION_TOP;
+  }
+  else if (ytemp > (ST7735_height - rect->depth)) {
+    ytemp = ST7735_height - rect->depth;
+    collision = COLLISION_BOTTOM;
+  }
+  rect->pos_x = (uint8_t) xtemp;
+  rect->pos_y = (uint8_t) ytemp;
+  
+  // draw the new rectangle
+  f3d_lcd_drawRectangle(rect->pos_x, rect->pos_y, rect->width, rect->depth, rect->color);
+  return (collision);
 }

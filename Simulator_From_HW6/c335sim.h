@@ -5,8 +5,6 @@
 void Delay(int);
 int c335_main(int argc, char *argv[]);
 
-/*  Colors are 565 BGR (5 bits blue, 6 bits green, 5 bits red) */
-
 #define BLACK 0x0000
 #define BLUE 0xF800
 #define CYAN 0xFFE0
@@ -15,7 +13,6 @@ int c335_main(int argc, char *argv[]);
 #define RED 0x001F
 #define WHITE 0xFFFF
 #define YELLOW 0x07FF
-
 /* 
  * MADCTL [MY MX MV]
  *    MY  row address order   0 (bottom to top), 1 (top to bottom)
@@ -29,9 +26,9 @@ int c335_main(int argc, char *argv[]);
 #define ST7735_width  160
 #define ST7735_height 128
 
-void ST7735_setAddrWindow(uint16_t x0, uint16_t y0, 
+void f3d_lcd_setAddrWindow(uint16_t x0, uint16_t y0, 
 			  uint16_t x1, uint16_t y1, uint8_t madctl);
-void ST7735_pushColor(uint16_t *color, int cnt);
-void ST7735_init();
+void f3d_lcd_pushColor(uint16_t *color, int cnt);
+void f3d_lcd_init();
 
 #endif
