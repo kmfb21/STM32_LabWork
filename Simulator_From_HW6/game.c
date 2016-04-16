@@ -33,12 +33,6 @@ void event_loop(void) {
     case SDLK_DOWN:
       paddle_right_move = 0;
       break;
-    case SDLK_a:
-      paddle_left_move = 0;
-      break;
-    case SDLK_z:
-      paddle_left_move = 0;
-      break;
     default:
       break;
     }
@@ -50,12 +44,6 @@ void event_loop(void) {
       break;
     case SDLK_DOWN:
       paddle_right_move = PADDLE_MOVE_INCREMENT;
-      break;
-    case SDLK_a:
-      paddle_left_move = -PADDLE_MOVE_INCREMENT; 
-      break;
-    case SDLK_z:
-      paddle_left_move = PADDLE_MOVE_INCREMENT; 
       break;
     case SDLK_q:
       printf("Q PRESSED - Exit Program\n");
@@ -113,6 +101,10 @@ int pressed() {
 int c335_main( int argc, char *argv[] ) {
 
   if(argc==3) {
+    f3d_lcd_fillScreen(WHITE);
+    rect_t test;
+    initRect(&test, 0,0,128,160,BLUE);
+    pressed();
     return (0);
   }
 

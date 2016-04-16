@@ -23,8 +23,8 @@ int c335_main(int argc, char *argv[]);
 #define MADCTLGRAPHICS 0x6
 #define MADCTLBMP      0x2
 
-#define ST7735_width  160
-#define ST7735_height 128
+#define ST7735_width  128
+#define ST7735_height 160
 
 void f3d_lcd_setAddrWindow(uint16_t x0, uint16_t y0, 
 			  uint16_t x1, uint16_t y1, uint8_t madctl);
