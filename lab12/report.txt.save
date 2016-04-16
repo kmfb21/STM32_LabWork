@@ -1,0 +1,22 @@
+Q1. What is the significance of the peripheral base address? Where does it point? 
+Its the address of prephrial from DMA
+It points to thedata from the prephrial.
+
+Q2. Why is it necessary to enable incrementing as was done in this step?
+What will the DMA controller do in response to this configuration.
+
+It allows us to get the data when reading through an array, 
+when you need to read data from more than one DR register, you need to make it enable
+
+Q3. Why is this line of the code necessary?
+
+It holds on the program until get flag
+
+Q4. For transfers of less than 4 bytes, what do you think is the reason for not using the xchng_datablock functions?
+
+Because DMA can make it more efficient
+
+difficulties: when initial, it always failed.
+	and also, I always forgot to bring my earphones
+
+learn: how DMA 
