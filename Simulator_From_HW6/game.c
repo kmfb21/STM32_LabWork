@@ -1,5 +1,6 @@
 #include "c335sim.h"
 #include "screen.h"
+#include "tank.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -17,7 +18,7 @@ rect_t ball;
 
 int ball_vx = 1;
 int ball_vy = 2;
-
+extern uint16_t tankimg[32][32];
 /*The event loop that handles the key input*/
 void event_loop(void) {
   static int paddle_left_move = 0; 
@@ -100,10 +101,14 @@ int pressed() {
 
 int c335_main( int argc, char *argv[] ) {
 
+  int i,j;
   if(argc==3) {
-    f3d_lcd_fillScreen(WHITE);
+    //f3d_lcd_fillScreen(WHITE);
     rect_t test;
     initRect(&test, 0,0,128,160,BLUE);
+    for(i=6;i<22;i++)
+      for(j=8;j<24;j++)
+	f3d_lcd_drawPixel(j,i,tankimg[i][j]);
     pressed();
     return (0);
   }

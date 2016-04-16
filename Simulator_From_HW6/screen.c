@@ -4,6 +4,12 @@ const int cw = 5;
 const int ch = 8;
 extern uint8_t ASCII[];
 
+void f3d_lcd_drawPixel(uint8_t x, uint8_t y, uint16_t color) {
+    if ((x >= ST7735_width) || (y >= ST7735_height)) return;
+    f3d_lcd_setAddrWindow(x,y,x+1,y+1,MADCTLGRAPHICS);
+    f3d_lcd_pushColor(&color,1);
+}
+
 void f3d_lcd_fillScreen(uint16_t color) {
   uint8_t x,y;
   uint16_t buf[ST7735_width];
