@@ -1,12 +1,12 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
+ * Description: HW7
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Bo Fang(bofang)
  * Created: Thu Aug 20 09:00:02 2015
- * Last-Updated: 
- *           By: 
+ * Last-Updated: 04/17/2016
+ *           By: Bo Fang(bofang)
  *     Update #: 0
  * Keywords: 
  * Compatibility: 
