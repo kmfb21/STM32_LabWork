@@ -26,11 +26,11 @@ main(int argc, char *argv[]) {
       //printf("%d %d %d", pix.b, pix.g, pix.r);
       color=((pix.r>>3)<<11)|((pix.g>>2)<<5)|(pix.b>>3);   
       colors[i][j]=color;
-      //if(color>0x8888) printf("#");
-      //else printf(" ");
-    }
-    //printf("\n");
-  }
+      if(i<50 && j<50) {if(color>0x1000) printf("#");
+	else printf(" ");}
+    }if(i<50)
+    printf("\n");
+  }/*
   close(f);
   FILE* fw;
   fw=fopen("../wall.c","w");
@@ -45,5 +45,5 @@ main(int argc, char *argv[]) {
     else fprintf(fw,"},\n");
   }
   fprintf(fw,"};\n");
-  fclose(fw);
+  fclose(fw);*/
 }
