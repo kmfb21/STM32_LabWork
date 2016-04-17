@@ -26,22 +26,22 @@ main(int argc, char *argv[]) {
       //printf("%d %d %d", pix.b, pix.g, pix.r);
       color=((pix.r>>3)<<11)|((pix.g>>2)<<5)|(pix.b>>3);   
       colors[i][j]=color;
-      if(color>0x1000) printf("#");
-      else printf(" ");
-    }
+      if(i<50 && j<50) {if(color>0x1000) printf("#");
+	else printf(" ");}
+    }if(i<50)
     printf("\n");
   }
   close(f);
   FILE* fw;
   fw=fopen("../wall.c","w");
   fprintf(fw,"#include\"wall.h\"\n#include<stdint.h>\n");
-  fprintf(fw,"uint16_t wallimg[100][100] = {\n");
-  for(i=0;i<100;i++) {
-    fprintf(fw,"{0x%x",colors[i][0]);
-    for(j=1;j<100;j++) {
+  fprintf(fw,"uint16_t wallimg[16][16] = {\n");
+  for(i=0;i<32;i+=2) {
+    fprintf(fw,"{0x%x",colors[i][24]);
+    for(j=26;j<56;j+=2) {
       fprintf(fw,",0x%x",colors[i][j]);
     }
-    if(i==99) fprintf(fw,"}\n");
+    if(i==30) fprintf(fw,"}\n");
     else fprintf(fw,"},\n");
   }
   fprintf(fw,"};\n");

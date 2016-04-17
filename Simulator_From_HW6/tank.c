@@ -43,12 +43,12 @@ void drawTank(Tank *t) {
     break;
   case 2:
     for (i = 0; i < CELL*CELL; i++) {
-      buf[i] = tankimg[CELL-i/CELL][i%CELL];
+      buf[i] = tankimg[CELL-1-i/CELL][i%CELL];
     }
     break;
   case 3:
     for (i = 0; i < CELL*CELL; i++) {
-      buf[i] = tankimg[CELL-i%CELL][i/CELL];
+      buf[i] = tankimg[CELL-1-i%CELL][i/CELL];
     }
     break;
   default:
