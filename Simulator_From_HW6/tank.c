@@ -1,6 +1,7 @@
 #include"tank.h"
 #include<stdint.h>
 #include"c335sim.h"
+#include"screen.h"
 uint16_t tankimg[16][16] = {
 {0x3107,0x418a,0x28c6,0x20c5,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1004,0x3088,0x3087,0x2024},
 {0xb4d7,0xcd3a,0x8b53,0x6a6f,0x804,0x20a7,0x1805,0x3048,0x2007,0x2828,0x1807,0x1807,0x48cc,0x8ab4,0x9314,0x7290},
@@ -29,7 +30,7 @@ void initTank(Tank *t,uint8_t x,uint8_t y,uint8_t enemy) {
 
 void drawTank(Tank *t) {
   uint16_t buf[TANK_width*TANK_height];
-  int i;printf("%d",t->head);
+  int i;
   f3d_lcd_setAddrWindow(t->x, t->y, t->x+TANK_width-1, t->y+TANK_height-1, MADCTLBMP);
   switch(t->head) {
   case 0:
@@ -54,4 +55,46 @@ void drawTank(Tank *t) {
     break;
   }
   f3d_lcd_pushColor(buf,TANK_width*TANK_height);
+}
+void eraseTank(Tank *t,uint16_t background_color) {
+  f3d_lcd_drawRectangle(t->x,t->y,TANK_width,TANK_height,background_color);
+}
+int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
+  int xtemp;
+  int ytemp;
+  int collision = 0;
+
+  eraseTank(t,background_color);
+
+  // update heading
+  if(delta_y<0) t->head=0;
+  if(delta_x>0) t->head=1;
+  if(delta_y>0) t->head=2;
+  if(delta_x<0) t->head=3;
+
+  // update x,y postion based on deltas, 
+  xtemp = (int) (t->x + delta_x);   // cast as int to gain benefit of sign and larger size 
+  ytemp = (int) (t->y + delta_y);
+  if (xtemp < 0) {
+    xtemp = 0;
+    collision = COLLISION_LEFT;
+  }
+  else if (xtemp > (ST7735_width - TANK_width)) {
+    xtemp = ST7735_width - TANK_width;
+    collision = COLLISION_RIGHT;
+  }
+  if (ytemp < 0) {
+    ytemp = 0;
+    collision = COLLISION_TOP;
+  }
+  else if (ytemp > (ST7735_height - TANK_height)) {
+    ytemp = ST7735_height - TANK_height;
+    collision = COLLISION_BOTTOM;
+  }
+  t->x = (uint8_t) xtemp;
+  t->y = (uint8_t) ytemp;
+  
+  // draw the new tank
+  drawTank(t);
+  return (collision);
 }
