@@ -29,35 +29,35 @@ void initTank(Tank *t,uint8_t x,uint8_t y,uint8_t enemy) {
 }
 
 void drawTank(Tank *t) {
-  uint16_t buf[TANK_width*TANK_height];
+  uint16_t buf[CELL*CELL];
   int i;
-  f3d_lcd_setAddrWindow(t->x, t->y, t->x+TANK_width-1, t->y+TANK_height-1, MADCTLBMP);
+  f3d_lcd_setAddrWindow(t->x, t->y, t->x+CELL-1, t->y+CELL-1, MADCTLBMP);
   switch(t->head) {
   case 0:
-    for (i = 0; i < TANK_width*TANK_height; i++)
-      buf[i] = tankimg[i/TANK_width][i%TANK_width];
+    for (i = 0; i < CELL*CELL; i++)
+      buf[i] = tankimg[i/CELL][i%CELL];
     break;
   case 1:
-    for (i = 0; i < TANK_width*TANK_height; i++)
-      buf[i] = tankimg[i%TANK_width][i/TANK_width];
+    for (i = 0; i < CELL*CELL; i++)
+      buf[i] = tankimg[i%CELL][i/CELL];
     break;
   case 2:
-    for (i = 0; i < TANK_width*TANK_height; i++) {
-      buf[i] = tankimg[TANK_height-i/TANK_width][i%TANK_width];
+    for (i = 0; i < CELL*CELL; i++) {
+      buf[i] = tankimg[CELL-i/CELL][i%CELL];
     }
     break;
   case 3:
-    for (i = 0; i < TANK_width*TANK_height; i++) {
-      buf[i] = tankimg[TANK_width-i%TANK_width][i/TANK_width];
+    for (i = 0; i < CELL*CELL; i++) {
+      buf[i] = tankimg[CELL-i%CELL][i/CELL];
     }
     break;
   default:
     break;
   }
-  f3d_lcd_pushColor(buf,TANK_width*TANK_height);
+  f3d_lcd_pushColor(buf,CELL*CELL);
 }
 void eraseTank(Tank *t,uint16_t background_color) {
-  f3d_lcd_drawRectangle(t->x,t->y,TANK_width,TANK_height,background_color);
+  f3d_lcd_drawRectangle(t->x,t->y,CELL,CELL,background_color);
 }
 int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
   int xtemp;
@@ -79,16 +79,16 @@ int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color)
     xtemp = 0;
     collision = COLLISION_LEFT;
   }
-  else if (xtemp > (ST7735_width - TANK_width)) {
-    xtemp = ST7735_width - TANK_width;
+  else if (xtemp > (ST7735_width - CELL)) {
+    xtemp = ST7735_width - CELL;
     collision = COLLISION_RIGHT;
   }
   if (ytemp < 0) {
     ytemp = 0;
     collision = COLLISION_TOP;
   }
-  else if (ytemp > (ST7735_height - TANK_height)) {
-    ytemp = ST7735_height - TANK_height;
+  else if (ytemp > (ST7735_height - CELL)) {
+    ytemp = ST7735_height - CELL;
     collision = COLLISION_BOTTOM;
   }
   t->x = (uint8_t) xtemp;

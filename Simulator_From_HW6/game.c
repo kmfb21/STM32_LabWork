@@ -13,8 +13,6 @@
 
 Tank user;
 
-extern uint16_t tankimg[16][16];
-
 void event_loop(void) {
   static int user_v_move = 0;
   static int user_h_move = 0;
@@ -58,7 +56,6 @@ void event_loop(void) {
       user_v_move = 0;
       break;
     case SDLK_q:
-      //printf("Q PRESSED - Exit Program\n");
       exit(0);
       break;
     default:
@@ -75,8 +72,6 @@ void tank_game(void) {
   int collision;
 
   //f3d_lcd_drawString(40,60,"hit q to quit",WHITE,BLACK);
-  //redrawRect(&left_paddle);
-  //redrawRect(&right_paddle);
   event_loop();
   //collision = moveTank(&user, user_vx, user_vy, BLACK);
   /*

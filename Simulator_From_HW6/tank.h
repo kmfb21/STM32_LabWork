@@ -1,6 +1,5 @@
 #include<stdint.h>
-#define TANK_width 16
-#define TANK_height 16
+#define CELL 16
 
 typedef struct onetank {
   uint8_t x;
