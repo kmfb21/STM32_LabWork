@@ -17,7 +17,7 @@ static SDL_Rect  destRect;
 
 #define SDL_main main
 
-static zoom = 3;
+static zoom = 5;
 
 static int half = 0;
 

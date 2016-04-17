@@ -101,13 +101,20 @@ int pressed() {
     if(event.key.keysym.sym==SDLK_q) return 'q';
   }
 }
-
+extern uint16_t wallimg[100][100];
 int c335_main( int argc, char *argv[] ) {
 
   //f3d_lcd_fillScreen(BLACK);
 
   initTank(&user,50,50,0);
   drawTank(&user);
+  int i,j;
+  for(i=0;i<100;i++)
+    for(j=0;j<100;j++)
+      //printf("%x",wallimg[i][j]);
+      f3d_lcd_drawPixel(j,i,wallimg[i][j]);
+  pressed();
+  //return(0);
   while (1) {
     tank_game();
     Delay(EVENT_LOOP_TIME);
