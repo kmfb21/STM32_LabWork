@@ -1,8 +1,11 @@
 #include<stdint.h>
-#include"tank.h"
-#include"info.h"
 #include"c335sim.h"
 #include"screen.h"
+
+#include"wall.h"
+#include"tank.h"
+#include"info.h"
+
 uint16_t tankimg[16][16] = {
 {0x3107,0x418a,0x28c6,0x20c5,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1004,0x3088,0x3087,0x2024},
 {0xb4d7,0xcd3a,0x8b53,0x6a6f,0x804,0x20a7,0x1805,0x3048,0x2007,0x2828,0x1807,0x1807,0x48cc,0x8ab4,0x9314,0x7290},
@@ -26,7 +29,8 @@ void initTank(Tank *t,uint8_t x,uint8_t y,uint8_t enemy) {
   t->x=x;
   t->y=y;
   t->enemy=enemy;
-  t->head=2;
+  if(enemy) t->head=2;
+  else t->head=0;
 }
 
 void drawTank(Tank *t) {
@@ -60,11 +64,10 @@ void drawTank(Tank *t) {
 void eraseTank(Tank *t,uint16_t background_color) {
   f3d_lcd_drawRectangle(t->x,t->y,CELL,CELL,background_color);
 }
-int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
+extern uint8_t map[10][8];
+void moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
   int xtemp;
   int ytemp;
-  int collision = 0;
-
   eraseTank(t,background_color);
 
   // update heading
@@ -74,28 +77,33 @@ int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color)
   if(delta_x<0) t->head=3;
 
   // update x,y postion based on deltas, 
-  xtemp = (int) (t->x + delta_x);   // cast as int to gain benefit of sign and larger size 
+  xtemp = (int) (t->x + delta_x);
   ytemp = (int) (t->y + delta_y);
-  if (xtemp < 0) {
+  //wall hit
+  int col = xtemp/CELL;
+  int row = ytemp/CELL;
+  if(delta_x<0 && map[row][col])
+    xtemp = (col+1)*CELL;
+  if(delta_x>0 && map[row][col+1])
+    xtemp = col*CELL;
+  if(delta_y<0 && map[row][col])
+    ytemp = (row+1)*CELL;
+  if(delta_y>0 && map[row+1][col])
+    ytemp = row*CELL;
+  //bound hit
+  if (xtemp < 0) 
     xtemp = 0;
-    collision = COLLISION_LEFT;
-  }
-  else if (xtemp > (ST7735_width - CELL)) {
+  if (xtemp > (ST7735_width - CELL)) 
     xtemp = ST7735_width - CELL;
-    collision = COLLISION_RIGHT;
-  }
-  if (ytemp < 0) {
+  if (ytemp < 0) 
     ytemp = 0;
-    collision = COLLISION_TOP;
-  }
-  else if (ytemp > (ST7735_height - CELL)) {
+  if (ytemp > (ST7735_height - CELL)) 
     ytemp = ST7735_height - CELL;
-    collision = COLLISION_BOTTOM;
-  }
+
   t->x = (uint8_t) xtemp;
   t->y = (uint8_t) ytemp;
-  
+
   // draw the new tank
   drawTank(t);
-  return (collision);
+  return;
 }

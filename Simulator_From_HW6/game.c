@@ -65,27 +65,9 @@ void event_loop(void) {
 }
 
 void tank_game(void) {
-  int collision;
 
   //f3d_lcd_drawString(40,60,"hit q to quit",WHITE,BLACK);
   event_loop();
-  //collision = moveTank(&user, user_vx, user_vy, BLACK);
-  /*
-  switch (collision) {
-  case COLLISION_TOP:
-    ball_vy = -ball_vy;
-    break;
-  case COLLISION_BOTTOM:
-    ball_vy = -ball_vy;
-    break;
-  case COLLISION_LEFT:
-    ball_vx = -ball_vx;
-    break;
-  case COLLISION_RIGHT:
-    ball_vx = -ball_vx;
-    break;
-  }
-  */
 }
 
 int pressed() {
@@ -102,11 +84,12 @@ int c335_main( int argc, char *argv[] ) {
 
   //f3d_lcd_fillScreen(BLACK);
 
-  initTank(&user,50,50,0);
-  //drawTank(&user);
+  initTank(&user,100,100,0);
+  user.head=0;
+  drawTank(&user);
   drawMap();
-  pressed();
-  return(0);
+  //pressed();
+  //return(0);
   while (1) {
     tank_game();
     Delay(EVENT_LOOP_TIME);

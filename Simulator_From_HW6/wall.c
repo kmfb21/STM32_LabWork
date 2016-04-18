@@ -1,9 +1,11 @@
+#include<stdint.h>
+#include"c335sim.h"
+#include"screen.h"
+
 #include"wall.h"
 #include"tank.h"
 #include"info.h"
-#include"screen.h"
-#include"c335sim.h"
-#include<stdint.h>
+
 uint16_t wallimg[16][16] = {
 {0x6916,0x70d9,0x6898,0x6879,0x899d,0x68b9,0x6899,0x68b9,0x6058,0x6898,0x70d9,0x68b9,0x813c,0x70ba,0x6079,0x68f8},
 {0x7257,0x40b4,0x38d3,0x30f3,0x3893,0x3053,0x3894,0x3053,0x61d9,0x40b5,0x40b4,0x40d5,0x30b4,0x30b4,0x3074,0x3893},
@@ -30,9 +32,9 @@ uint8_t map[10][8] = {
   {0,1,1,0,0,1,1,0},
   {0,1,0,0,0,0,1,0},
   {0,0,0,0,0,0,0,0},
+  {0,0,1,0,0,1,0,0},
   {0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0},
-  {0,0,0,2,0,0,0,0}
+  {0,0,0,0,0,0,0,0}
 };
 void drawWall(uint8_t x, uint8_t y) {
   uint16_t buf[CELL*CELL];
@@ -42,14 +44,12 @@ void drawWall(uint8_t x, uint8_t y) {
     buf[i]=wallimg[i/CELL][i%CELL];
   f3d_lcd_pushColor(buf,CELL*CELL);
 }
+extern Tank user;
 void drawMap(void) {
-  Tank t;
   int i,j;
   for(i=0;i<10;i++)
     for(j=0;j<8;j++) {
       if(map[i][j])
-	if(map[i][j]==2) initTank(&t,j*CELL,i*CELL,0);
-	else drawWall(j*CELL,i*CELL);
+	drawWall(j*CELL,i*CELL);
     }
-  drawTank(&t);
 }
