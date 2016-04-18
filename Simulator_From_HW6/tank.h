@@ -1,5 +1,4 @@
 #include<stdint.h>
-#define CELL 16
 
 typedef struct onetank {
   uint8_t x;

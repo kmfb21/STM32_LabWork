@@ -1,15 +1,11 @@
 #include "c335sim.h"
 #include "screen.h"
 #include "tank.h"
+#include "info.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <SDL/SDL.h>
-
-#define TANK_V_INC 1
-#define TANK_H_INC 1
-#define BULL_V 3
-#define EVENT_LOOP_TIME 20
 
 Tank user;
 
@@ -107,14 +103,10 @@ int c335_main( int argc, char *argv[] ) {
   //f3d_lcd_fillScreen(BLACK);
 
   initTank(&user,50,50,0);
-  drawTank(&user);
-  int i,j;
-  for(i=0;i<16;i++)
-    for(j=0;j<16;j++)
-      //printf("%x",wallimg[i][j]);
-      f3d_lcd_drawPixel(j+20,i+20,wallimg[i][j]);
+  //drawTank(&user);
+  drawMap();
   pressed();
-  //return(0);
+  return(0);
   while (1) {
     tank_game();
     Delay(EVENT_LOOP_TIME);

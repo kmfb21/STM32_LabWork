@@ -1,5 +1,6 @@
-#include"tank.h"
 #include<stdint.h>
+#include"tank.h"
+#include"info.h"
 #include"c335sim.h"
 #include"screen.h"
 uint16_t tankimg[16][16] = {
