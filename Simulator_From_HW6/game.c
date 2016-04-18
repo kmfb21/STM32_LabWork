@@ -66,7 +66,7 @@ void event_loop(void) {
 
 void tank_game(void) {
 
-  //f3d_lcd_drawString(40,60,"hit q to quit",WHITE,BLACK);
+  f3d_lcd_drawString(25,150,"hit q to quit",WHITE,BLACK);
   event_loop();
 }
 

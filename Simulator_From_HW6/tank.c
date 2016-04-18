@@ -80,18 +80,20 @@ void moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color
   xtemp = (int) (t->x + delta_x);
   ytemp = (int) (t->y + delta_y);
   //wall hit
-  int col = xtemp/CELL;
-  int row = ytemp/CELL;
-  if(delta_x<0 && map[row][col])
-    xtemp = (col+1)*CELL;
-  if(delta_x>0 && map[row][col+1])
-    xtemp = col*CELL;
-  if(delta_y<0 && map[row][col])
-    ytemp = (row+1)*CELL;
-  if(delta_y>0 && map[row+1][col])
-    ytemp = row*CELL;
+  int leftcol = xtemp/CELL;
+  int uprow = ytemp/CELL;
+  int rightcol = (xtemp+CELL-1)/CELL;
+  int downrow = (ytemp+CELL-1)/CELL;
+  if(delta_x<0 && (map[uprow][leftcol] || map[downrow][leftcol]))
+    xtemp = rightcol*CELL;
+  if(delta_x>0 && (map[uprow][rightcol] || map[downrow][rightcol]))
+    xtemp = leftcol*CELL;
+  if(delta_y<0 && (map[uprow][leftcol] || map[uprow][rightcol]))
+    ytemp = downrow*CELL;
+  if(delta_y>0 && (map[downrow][leftcol] || map[downrow][rightcol]))
+    ytemp = uprow*CELL;
   //bound hit
-  if (xtemp < 0) 
+  if (xtemp < 0)
     xtemp = 0;
   if (xtemp > (ST7735_width - CELL)) 
     xtemp = ST7735_width - CELL;
