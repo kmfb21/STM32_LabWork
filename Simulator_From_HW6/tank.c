@@ -32,7 +32,10 @@ void initTank(Tank *t,uint8_t x,uint8_t y,uint8_t enemy) {
   if(enemy) t->head=2;
   else t->head=0;
 }
-
+uint16_t changecolor(uint16_t color,int enemy) {
+  if(enemy) return color;
+  return color > 0x400a ? (0-color):0;
+}
 void drawTank(Tank *t) {
   uint16_t buf[CELL*CELL];
   int i;
@@ -40,20 +43,20 @@ void drawTank(Tank *t) {
   switch(t->head) {
   case 0:
     for (i = 0; i < CELL*CELL; i++)
-      buf[i] = tankimg[i/CELL][i%CELL];
+      buf[i] = changecolor(tankimg[i/CELL][i%CELL],t->enemy);
     break;
   case 1:
     for (i = 0; i < CELL*CELL; i++)
-      buf[i] = tankimg[i%CELL][i/CELL];
+      buf[i] = changecolor(tankimg[i%CELL][i/CELL],t->enemy);
     break;
   case 2:
     for (i = 0; i < CELL*CELL; i++) {
-      buf[i] = tankimg[CELL-1-i/CELL][i%CELL];
+      buf[i] = changecolor(tankimg[CELL-1-i/CELL][i%CELL],t->enemy);
     }
     break;
   case 3:
     for (i = 0; i < CELL*CELL; i++) {
-      buf[i] = tankimg[CELL-1-i%CELL][i/CELL];
+      buf[i] = changecolor(tankimg[CELL-1-i%CELL][i/CELL],t->enemy);
     }
     break;
   default:

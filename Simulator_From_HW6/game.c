@@ -79,12 +79,13 @@ int pressed() {
     if(event.key.keysym.sym==SDLK_q) return 'q';
   }
 }
-extern uint16_t wallimg[16][16];
+//extern uint16_t wallimg[16][16];
+
 int c335_main( int argc, char *argv[] ) {
 
   //f3d_lcd_fillScreen(BLACK);
 
-  initTank(&user,100,100,0);
+  initTank(&user,56,128,0);
   user.head=0;
   drawTank(&user);
   drawMap();
