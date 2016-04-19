@@ -9,4 +9,4 @@ typedef struct onetank {
 void initTank(Tank *,uint8_t,uint8_t,uint8_t);
 void drawTank(Tank *);
 void eraseTank(Tank *,uint16_t);
-void moveTank(Tank *,int8_t,int8_t,uint16_t);
+int moveTank(Tank *,int8_t,int8_t,uint16_t);

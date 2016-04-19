@@ -82,16 +82,24 @@ void tank_game(void) {
   if(ENEMY0) {
     if(tanks[0].x%16==0 && tanks[0].y%16==0 && ACTION)
       tank_move0 = 1<<(rand()%4);
-    moveTank(tanks, tank_h(0), tank_v(0), BLACK);
+    if(moveTank(tanks, tank_h(0), tank_v(0), BLACK)) {
+      if(tanks[0].head%2==0) tank_move0 ^= 0b0101;
+      else tank_move0 ^= 0b1010;
+    }
   } else {
     initTank(tanks,positions[0][0],positions[0][1],1);
     drawTank(tanks);
     lives|=1;
   }
   if(ENEMY1) {
+    //if it is in a cell, it randomly change direction
     if(tanks[1].x%16==0 && tanks[1].y%16==0 && ACTION)
       tank_move1 = 1<<(rand()%4);
-    moveTank(tanks+1, tank_h(1), tank_v(1), BLACK);
+    //if it runs and hits other tanks, it go back
+    if(moveTank(tanks+1, tank_h(1), tank_v(1), BLACK)) {
+      if(tanks[1].head%2==0) tank_move1 ^= 0b0101;
+      else tank_move1 ^= 0b1010;
+    }
   } else {
     initTank(tanks+1,positions[1][0],positions[1][1],1);
     drawTank(tanks+1);
@@ -100,7 +108,10 @@ void tank_game(void) {
   if(ENEMY2) {
     if(tanks[2].x%16==0 && tanks[2].y%16==0 && ACTION)
       tank_move2 = 1<<(rand()%4);
-    moveTank(tanks+2, tank_h(2), tank_v(2), BLACK);
+    if(moveTank(tanks+2, tank_h(2), tank_v(2), BLACK)) {
+      if(tanks[2].head%2==0) tank_move2 ^= 0b0101;
+      else tank_move2 ^= 0b1010;
+    }
   } else {
     initTank(tanks+2,positions[2][0],positions[2][1],1);
     drawTank(tanks+2);

@@ -67,8 +67,19 @@ void drawTank(Tank *t) {
 void eraseTank(Tank *t,uint16_t background_color) {
   f3d_lcd_drawRectangle(t->x,t->y,CELL,CELL,background_color);
 }
+
 extern uint8_t map[10][8];
-void moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
+extern Tank user;
+extern Tank tanks[3];
+int collision(int xtemp,int ytemp, Tank *t) {
+  if(((t->x)<=xtemp && xtemp<(t->x+CELL) && (t->y)<=ytemp && ytemp<(t->y+CELL))
+     ||((t->x)<=(xtemp+CELL-1) && (xtemp+CELL-1)<(t->x+CELL) && (t->y)<=(ytemp+CELL-1) && (ytemp+CELL-1)<(t->y+CELL))
+     ||((t->x)<=(xtemp+CELL-1) && (xtemp+CELL-1)<(t->x+CELL) && (t->y)<=ytemp && ytemp<(t->y+CELL))
+     ||((t->x)<=xtemp && xtemp<(t->x+CELL) && (t->y)<=(ytemp+CELL-1) && (ytemp+CELL-1)<(t->y+CELL)))
+    return 1;
+  return 0;
+}
+int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color) {
   int xtemp;
   int ytemp;
   eraseTank(t,background_color);
@@ -82,6 +93,14 @@ void moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color
   // update x,y postion based on deltas, 
   xtemp = (int) (t->x + delta_x);
   ytemp = (int) (t->y + delta_y);
+  //tanks collision
+  if((t!=&user && collision(xtemp,ytemp,&user))||
+     (t!=tanks && collision(xtemp,ytemp,tanks))||
+     (t!=tanks+1 && collision(xtemp,ytemp,tanks+1))||
+     (t!=tanks+2 && collision(xtemp,ytemp,tanks+2))) {
+    drawTank(t);
+    return 1;
+  }
   //wall hit
   int leftcol = xtemp/CELL;
   int uprow = ytemp/CELL;
@@ -110,5 +129,5 @@ void moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color
 
   // draw the new tank
   drawTank(t);
-  return;
+  return 0;
 }
