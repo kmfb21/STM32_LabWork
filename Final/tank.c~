@@ -39,11 +39,11 @@ uint16_t changecolor(uint16_t color,int enemy) {
 void drawTank(Tank *t) {
   uint16_t buf[CELL*CELL];
   int i;
-  f3d_lcd_setAddrWindow(t->x, t->y, t->x+CELL-1, t->y+CELL-1, 0x6);
+  f3d_lcd_setAddrWindow(t->x, t->y, t->x+CELL-1, t->y+CELL-1, 0x2);
   switch(t->head) {
   case 0:
     for (i = 0; i < CELL*CELL; i++)
-      buf[i] = changecolor(tankimg[CELL-1-i/CELL][i%CELL],t->enemy);
+      buf[i] = changecolor(tankimg[i/CELL][i%CELL],t->enemy);
     break;
   case 1:
     for (i = 0; i < CELL*CELL; i++)
@@ -51,7 +51,7 @@ void drawTank(Tank *t) {
     break;
   case 2:
     for (i = 0; i < CELL*CELL; i++) {
-      buf[i] = changecolor(tankimg[i/CELL][i%CELL],t->enemy);
+      buf[i] = changecolor(tankimg[CELL-1-i/CELL][i%CELL],t->enemy);
     }
     break;
   case 3:

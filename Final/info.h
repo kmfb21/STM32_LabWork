@@ -2,11 +2,11 @@
 #define CELL 16
 
 //speed and time
-#define TANK_V_INC 1
-#define TANK_H_INC 1
-#define BULL_V 2
+#define TANK_V_INC 4
+#define TANK_H_INC 4
+#define BULL_V 8
 #define BULL_DIM 2
-#define EVENT_LOOP_TIME 20
+#define EVENT_LOOP_TIME 0
 
 //born place
 #define USER_x 56

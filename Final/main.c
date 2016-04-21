@@ -36,7 +36,7 @@ void user_event_loop(void) {
     user_h_move = TANK_H_INC;
     user_v_move = 0;
   } else if(n.jx<30) {
-    user_h_move = TANK_H_INC;
+    user_h_move = -TANK_H_INC;
     user_v_move = 0;
   } else user_h_move = 0;
   if(n.z)

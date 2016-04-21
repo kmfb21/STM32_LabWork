@@ -39,9 +39,9 @@ uint8_t map[10][8] = {
 void drawWall(uint8_t x, uint8_t y) {
   uint16_t buf[CELL*CELL];
   int i;
-  f3d_lcd_setAddrWindow(x,y,x+CELL-1,y+CELL-1,0x2);
+  f3d_lcd_setAddrWindow(x,y,x+CELL-1,y+CELL-1,0x6);
   for(i=0;i<CELL*CELL;i++)
-    buf[i]=wallimg[i/CELL][i%CELL];
+    buf[i]=wallimg[CELL-1-i/CELL][i%CELL];
   f3d_lcd_pushColor(buf,CELL*CELL);
 }
 extern Tank user;
