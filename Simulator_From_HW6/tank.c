@@ -71,6 +71,9 @@ void eraseTank(Tank *t,uint16_t background_color) {
 extern uint8_t map[10][8];
 extern Tank user;
 extern Tank tanks[3];
+int hit(int xtemp,int ytemp, Tank *t) {
+  return ((t->x)<=xtemp && xtemp<(t->x+CELL) && (t->y)<=ytemp && ytemp<(t->y+CELL));
+}
 int collision(int xtemp,int ytemp, Tank *t) {
   if(((t->x)<=xtemp && xtemp<(t->x+CELL) && (t->y)<=ytemp && ytemp<(t->y+CELL))
      ||((t->x)<=(xtemp+CELL-1) && (xtemp+CELL-1)<(t->x+CELL) && (t->y)<=(ytemp+CELL-1) && (ytemp+CELL-1)<(t->y+CELL))
@@ -129,5 +132,71 @@ int moveTank(Tank *t, int8_t delta_x, int8_t delta_y, uint16_t background_color)
 
   // draw the new tank
   drawTank(t);
+  return 0;
+}
+
+void initBull(Bull *b,Tank *t) {
+  int x,y;
+  x=t->x+7;
+  y=t->y+7;
+  b->head=t->head;
+  b->enemy=t->enemy;
+  switch(b->head) {
+  case 0:
+    y-=7;
+    break;
+  case 1:
+    x+=7;
+    break;
+  case 2:
+    y+=7;
+    break;
+  case 3:
+    x-=7;
+    break;
+  default:
+    break;
+  }
+  uint16_t bullcolor;
+  if(b->enemy) bullcolor=RED;
+  else bullcolor=YELLOW;
+  initRect(&(b->ins),x,y,BULL_DIM,BULL_DIM,bullcolor);
+}
+
+int moveBull(Bull *b,uint16_t background) {
+  int x=0,y=0,i=0;
+  switch(b->head) {
+  case 0:
+    y=-BULL_V;
+    break;
+  case 1:
+    x=BULL_V;
+    break;
+  case 2:
+    y=BULL_V;
+    break;
+  case 3:
+    x=-BULL_V;
+    break;
+  default:
+    break;
+  }
+  int xtemp=b->ins.pos_x+x;
+  int ytemp=b->ins.pos_y+y;
+  if(b->enemy) {
+    //enemy hits user
+    if(hit(xtemp,ytemp,&user)) return 2;
+  } else {
+    //user hits enemy
+    for(i=0;i<3;i++)
+      if(hit(xtemp,ytemp,tanks+i)) return i+10;
+  }
+  //bullet hits walls
+  if(map[ytemp/CELL][xtemp/CELL]||
+     map[(ytemp+1)/CELL][(xtemp+1)/CELL]||
+     map[ytemp/CELL][(xtemp+1)/CELL]||
+     map[(ytemp+1)/CELL][xtemp/CELL]) return 1;
+  //bullet moves and hits boundary 
+  if(moveRect(&(b->ins),x,y,BLACK)) return 1;
   return 0;
 }
