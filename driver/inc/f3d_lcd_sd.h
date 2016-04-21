@@ -97,7 +97,8 @@ void f3d_lcd_setAddrWindow(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint8
 void f3d_lcd_pushColor(uint16_t *color,int cnt);
 static void f3d_lcd_writeCmd(uint8_t);
 
-void f3d_lcd_drawRectangle(uint16_t color, uint8_t x1, uint8_t y1, uint8_t x2,  uint8_t y2);
+//comment it for final project
+//void f3d_lcd_drawRectangle(uint16_t color, uint8_t x1, uint8_t y1, uint8_t x2,  uint8_t y2);
 
 void f3d_lcd_fillScreen(uint16_t);
 void f3d_lcd_drawPixel(uint8_t, uint8_t, uint16_t);
