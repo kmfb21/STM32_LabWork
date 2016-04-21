@@ -97,15 +97,17 @@ void f3d_lcd_setAddrWindow(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint8
 void f3d_lcd_pushColor(uint16_t *color,int cnt);
 static void f3d_lcd_writeCmd(uint8_t);
 
-void f3d_lcd_drawRectangle(uint16_t color, uint8_t x1, uint8_t y1, uint8_t x2,  uint8_t y2);
+//comment it for final project
+//void f3d_lcd_drawRectangle(uint16_t color, uint8_t x1, uint8_t y1, uint8_t x2,  uint8_t y2);
 
 void f3d_lcd_fillScreen(uint16_t);
 void f3d_lcd_drawPixel(uint8_t, uint8_t, uint16_t);
 void f3d_lcd_drawChar(uint8_t, uint8_t, unsigned char, uint16_t, uint16_t);
 void f3d_lcd_drawString(uint8_t, uint8_t, char *, uint16_t, uint16_t);
 
-int spiReadWrite(SPI_TypeDef *SPIx,uint8_t *rbuf,const uint8_t *tbuf, int cnt, uint16_t speed);
-int spiReadWrite16(SPI_TypeDef *SPIx,uint8_t *rbuf,const uint16_t *tbuf, int cnt,  uint16_t speed);
+int spiReadWrite(SPI_TypeDef *SPIx, uint8_t *rbuf, const uint8_t *tbuf, int cnt, uint16_t speed);
+static int xchng_datablock(SPI_TypeDef *SPIx, int half, const void *tbuf, void *rbuf, unsigned count);
+int spiReadWrite16(SPI_TypeDef *SPIx, uint16_t *rbuf, const uint16_t *tbuf, int cnt, uint16_t speed);
 static void LcdWrite(char dc,const char *data,int nbytes);
 static void LcdWrite16(char dc,const uint16_t *data,int cnt);
 
